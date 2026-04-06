@@ -1,6 +1,7 @@
 import professionalPhoto from "@/assets/professional-photo.jpg";
 import { Badge } from "@/components/ui/badge";
-import { FileDown, Mail, Phone, Linkedin, CheckCircle } from "lucide-react";
+import { FileDown, Mail, Phone, Linkedin, CheckCircle, FlaskConical, Search, LayoutGrid, Download } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 const stats = [
