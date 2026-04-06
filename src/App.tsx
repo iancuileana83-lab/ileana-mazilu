@@ -8,6 +8,7 @@ import ExecutiveSummary from "./pages/ExecutiveSummary";
 import ClinicalEvidenceVault from "./pages/ClinicalEvidenceVault";
 import RegulatoryCredentials from "./pages/RegulatoryCredentials";
 import Services from "./pages/Services";
+import ProjectHighlights from "./pages/ProjectHighlights";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/evidence" element={<ClinicalEvidenceVault />} />
             <Route path="/credentials" element={<RegulatoryCredentials />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/highlights" element={<ProjectHighlights />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AppLayout>
