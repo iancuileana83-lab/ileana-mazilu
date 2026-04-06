@@ -91,7 +91,68 @@ export default function ExecutiveSummary() {
         </ul>
       </div>
 
-      {/* Contact & Resources */}
+      {/* Technical Portfolio & Evidence */}
+      <div className="report-section">
+        <div className="report-header">
+          <p className="report-label">1.2 Technical Portfolio & Evidence</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="border-primary/10 hover:border-primary/30 transition-colors">
+            <CardContent className="pt-6 space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
+                <FlaskConical className="w-5 h-5 text-primary" />
+              </div>
+              <h3 className="font-display text-lg font-semibold text-foreground">Clinical Evaluation Samples</h3>
+              <p className="text-sm text-muted-foreground font-body leading-relaxed">
+                Representative anonymized excerpts from Class III CERs, showcasing data appraisal and benefit-risk analysis.
+              </p>
+              <Button variant="outline" size="sm" className="w-full gap-2 font-body">
+                View Sample
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-primary/10 hover:border-primary/30 transition-colors">
+            <CardContent className="pt-6 space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
+                <Search className="w-5 h-5 text-primary" />
+              </div>
+              <h3 className="font-display text-lg font-semibold text-foreground">Search Protocols & Methodology</h3>
+              <p className="text-sm text-muted-foreground font-body leading-relaxed">
+                Standardized literature search strings and protocols for PubMed and Embase, aligned with MDCG 2020 guidelines.
+              </p>
+              <Button variant="outline" size="sm" className="w-full gap-2 font-body">
+                View Protocol
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-primary/10 hover:border-primary/30 transition-colors">
+            <CardContent className="pt-6 space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
+                <LayoutGrid className="w-5 h-5 text-primary" />
+              </div>
+              <h3 className="font-display text-lg font-semibold text-foreground">Therapeutic Expertise Matrix</h3>
+              <p className="text-sm text-muted-foreground font-body leading-relaxed">
+                A comprehensive map of 12+ therapeutic areas covered in 80+ regulatory submissions.
+              </p>
+              <Button variant="outline" size="sm" className="w-full gap-2 font-body">
+                View Matrix
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="mt-8 text-center">
+          <a href="/professional_dossier.pdf" download>
+            <Button size="lg" className="gap-3 text-base font-body px-10 py-6 text-lg shadow-lg hover:shadow-xl transition-shadow bg-primary hover:bg-primary/90">
+              <Download className="w-6 h-6" />
+              Download Complete Professional Dossier (PDF)
+            </Button>
+          </a>
+        </div>
+      </div>
       <div className="report-section">
         <div className="report-header">
           <p className="report-label">1.2 Contact & Resources</p>
