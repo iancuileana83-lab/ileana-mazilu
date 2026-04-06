@@ -22,7 +22,7 @@ const highlights = [
 ];
 
 export default function ExecutiveSummary() {
-  return (
+  const [openModal, setOpenModal] = useState<string | null>(null);
     <div className="space-y-8 animate-fade-in">
       {/* Document Header */}
       <div className="report-header">
