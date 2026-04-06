@@ -155,7 +155,7 @@ export default function ExecutiveSummary() {
       </div>
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">1.2 Contact & Resources</p>
+          <p className="report-label">1.3 Contact & Resources</p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-8">
