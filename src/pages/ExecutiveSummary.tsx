@@ -2,8 +2,8 @@ import professionalPhoto from "@/assets/professional-photo.jpg";
 import { Badge } from "@/components/ui/badge";
 
 const stats = [
-  { label: "Years Experience", value: "15+" },
-  { label: "CERs Authored", value: "120+" },
+  { label: "Years in Pharma", value: "20+" },
+  { label: "Medical Writing Focus", value: "3 yrs" },
   { label: "Regulatory Submissions", value: "80+" },
   { label: "Therapeutic Areas", value: "12" },
 ];
@@ -50,10 +50,13 @@ export default function ExecutiveSummary() {
             <Badge variant="secondary" className="clinical-badge">ICH-GCP</Badge>
           </div>
           <p className="text-sm text-foreground/80 leading-relaxed font-body max-w-2xl">
-            Certified clinical researcher with 15+ years of expertise in regulatory medical writing
-            for the pharmaceutical and medical device industries. Specializing in clinical evaluation reports (CERs),
-            post-market clinical follow-up (PMCF) documentation, and periodic safety update reports (PSURs)
-            under EU MDR 2017/745 and MEDDEV 2.7/1 Rev. 4 frameworks.
+            Senior consultant with over 20 years of extensive experience in the pharmaceutical sector,
+            providing a deep understanding of pharmacology and clinical safety. Over the last 3 years,
+            I have specialized as a Medical Writer with a primary focus on Oncology and Clinical Evidence Appraisal,
+            authoring clinical evaluation reports (CERs), post-market clinical follow-up (PMCF) documentation,
+            and periodic safety update reports (PSURs). My career bridges decades of pharmaceutical expertise
+            with rigorous clinical evaluation standards, ensuring full compliance with EU MDR 2017/745
+            for high-risk medical devices.
           </p>
         </div>
       </div>
