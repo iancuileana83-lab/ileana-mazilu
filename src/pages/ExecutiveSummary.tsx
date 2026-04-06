@@ -109,9 +109,9 @@ export default function ExecutiveSummary() {
               </div>
               <h3 className="font-display text-lg font-semibold text-foreground">Clinical Evaluation Samples</h3>
               <p className="text-sm text-muted-foreground font-body leading-relaxed">
-                Representative anonymized excerpts from Class III CERs, showcasing data appraisal and benefit-risk analysis.
+                Anonymized excerpts from Class III CERs, focusing on clinical data appraisal and benefit-risk analysis for oncology devices.
               </p>
-              <Button variant="outline" size="sm" className="w-full gap-2 font-body">
+              <Button variant="outline" size="sm" className="w-full gap-2 font-body" onClick={() => setOpenModal("sample")}>
                 View Sample
               </Button>
             </CardContent>
@@ -124,9 +124,9 @@ export default function ExecutiveSummary() {
               </div>
               <h3 className="font-display text-lg font-semibold text-foreground">Search Protocols & Methodology</h3>
               <p className="text-sm text-muted-foreground font-body leading-relaxed">
-                Standardized literature search strings and protocols for PubMed and Embase, aligned with MDCG 2020 guidelines.
+                Standardized search strings and inclusion/exclusion criteria for PubMed/Embase, aligned with MDCG 2020 guidelines.
               </p>
-              <Button variant="outline" size="sm" className="w-full gap-2 font-body">
+              <Button variant="outline" size="sm" className="w-full gap-2 font-body" onClick={() => setOpenModal("protocol")}>
                 View Protocol
               </Button>
             </CardContent>
@@ -139,9 +139,9 @@ export default function ExecutiveSummary() {
               </div>
               <h3 className="font-display text-lg font-semibold text-foreground">Therapeutic Expertise Matrix</h3>
               <p className="text-sm text-muted-foreground font-body leading-relaxed">
-                A comprehensive map of 12+ therapeutic areas covered in 80+ regulatory submissions.
+                A comprehensive map of 12 therapeutic areas covered across 80+ regulatory submissions.
               </p>
-              <Button variant="outline" size="sm" className="w-full gap-2 font-body">
+              <Button variant="outline" size="sm" className="w-full gap-2 font-body" onClick={() => setOpenModal("matrix")}>
                 View Matrix
               </Button>
             </CardContent>
@@ -156,6 +156,69 @@ export default function ExecutiveSummary() {
             </Button>
           </a>
         </div>
+
+        {/* Modals */}
+        <Dialog open={openModal === "sample"} onOpenChange={(open) => !open && setOpenModal(null)}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="font-display text-xl">Section 4.2: Clinical Data Appraisal & Analysis</DialogTitle>
+              <DialogDescription className="font-body">Anonymized Class III CER excerpt</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 font-body text-sm text-foreground/85 leading-relaxed">
+              <p><span className="font-semibold text-foreground">Device:</span> Implantable Chemotherapy Port (Class III)</p>
+              <p><span className="font-semibold text-foreground">Indication:</span> Long-term vascular access for chemotherapy.</p>
+              <p><span className="font-semibold text-foreground">Analysis:</span> A systematic search identified 12 high-quality studies (N=1,450). Device patency rate: 98.2%. Implantation success: 100%.</p>
+              <p><span className="font-semibold text-foreground">Safety:</span> SAE rate (infection/migration) at 1.2%, within SOTA limits.</p>
+              <p><span className="font-semibold text-foreground">Conclusion:</span> Favorable benefit-risk profile; clinical benefits outweigh residual risks under IFU compliance.</p>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={openModal === "protocol"} onOpenChange={(open) => !open && setOpenModal(null)}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="font-display text-xl">PubMed Search String</DialogTitle>
+              <DialogDescription className="font-body">Standardized literature search protocol</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 font-body text-sm text-foreground/85 leading-relaxed">
+              <div className="bg-muted rounded-md p-4 font-mono text-xs leading-relaxed">
+                ("Oncology Service, Hospital"[Mesh] OR "Neoplasms"[Mesh]) AND ("Diagnostic Imaging"[Mesh] OR "Artificial Intelligence"[Mesh]) AND ("Clinical Evaluation"[Title/Abstract] OR "Performance Study"[Title/Abstract]) AND ("2021/01/01"[Date - Publication] : "2026/03/01"[Date - Publication])
+              </div>
+              <div>
+                <p className="font-semibold text-foreground mb-2">Selection Criteria:</p>
+                <p><span className="font-semibold text-foreground">Inclusion:</span> Human subjects, English/German/French, RCTs, prospective cohort studies.</p>
+                <p><span className="font-semibold text-foreground">Exclusion:</span> Case reports &lt;5 patients, animal studies, purely technical papers without clinical endpoints.</p>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={openModal === "matrix"} onOpenChange={(open) => !open && setOpenModal(null)}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="font-display text-xl">Therapeutic Footprint</DialogTitle>
+              <DialogDescription className="font-body">Representative areas across 80+ submissions</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-2 font-body text-sm text-foreground/85 leading-relaxed">
+              {[
+                ["Oncology", "CER, PMCF Plans, SSCP"],
+                ["Cardiovascular", "PSUR, Drug-Eluting Stents"],
+                ["Orthopedics", "Hip/Knee Arthroplasty"],
+                ["Neurology", "Neurostimulation Devices"],
+                ["Endocrinology", "Insulin Delivery Systems"],
+                ["Nephrology", "Dialysis Equipment"],
+              ].map(([area, detail]) => (
+                <div key={area} className="flex items-start gap-3 py-2 border-b border-border last:border-0">
+                  <span className="font-semibold text-foreground min-w-[120px]">{area}:</span>
+                  <span>{detail}</span>
+                </div>
+              ))}
+              <p className="text-muted-foreground italic pt-2">
+                ...and 6 other specialized fields including Gynecology, Ophthalmology, and AI-Diagnostics.
+              </p>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="report-section">
         <div className="report-header">
