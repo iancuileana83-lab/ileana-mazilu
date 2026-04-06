@@ -31,7 +31,7 @@ export default function ExecutiveSummary() {
           <div className="w-48 h-56 rounded-lg overflow-hidden border-2 border-primary/10 shadow-md">
             <img
               src={professionalPhoto}
-              alt="Dr. Elena Vasquez, Senior Clinical Evaluation Medical Writer"
+              alt="Ileana Mazilu, Senior Clinical Evaluation Medical Writer"
               className="w-full h-full object-cover"
               width={512}
               height={640}
@@ -40,8 +40,8 @@ export default function ExecutiveSummary() {
         </div>
         <div className="flex-1 space-y-4">
           <div>
-            <h2 className="font-display text-2xl font-semibold text-foreground">Dr. Elena Vasquez, PhD</h2>
-            <p className="text-muted-foreground font-body mt-1">Senior Clinical Evaluation Medical Writer — Oncology & Medical Devices</p>
+            <h2 className="font-display text-2xl font-semibold text-foreground">Ileana Mazilu</h2>
+            <p className="text-muted-foreground font-body mt-1">Senior Clinical Evaluation Medical Writer | Oncology & Medical Devices Specialist</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Badge variant="secondary" className="clinical-badge">EU MDR Specialist</Badge>
@@ -50,7 +50,7 @@ export default function ExecutiveSummary() {
             <Badge variant="secondary" className="clinical-badge">ICH-GCP</Badge>
           </div>
           <p className="text-sm text-foreground/80 leading-relaxed font-body max-w-2xl">
-            Board-certified clinical researcher with 15+ years of expertise in regulatory medical writing
+            Certified clinical researcher with 15+ years of expertise in regulatory medical writing
             for the pharmaceutical and medical device industries. Specializing in clinical evaluation reports (CERs),
             post-market clinical follow-up (PMCF) documentation, and periodic safety update reports (PSURs)
             under EU MDR 2017/745 and MEDDEV 2.7/1 Rev. 4 frameworks.
