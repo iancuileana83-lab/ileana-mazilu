@@ -1,5 +1,7 @@
 import professionalPhoto from "@/assets/professional-photo.jpg";
 import { Badge } from "@/components/ui/badge";
+import { FileDown, Mail, Phone, Linkedin, CheckCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const stats = [
   { label: "Years in Pharma", value: "20+" },
@@ -86,6 +88,53 @@ export default function ExecutiveSummary() {
             </li>
           ))}
         </ul>
+      </div>
+
+      {/* Contact & Resources */}
+      <div className="report-section">
+        <div className="report-header">
+          <p className="report-label">1.2 Contact & Resources</p>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Download CV */}
+          <div className="flex-1 space-y-4">
+            <a href="/ileana_mazilu_cv.pdf" download>
+              <Button size="lg" className="w-full md:w-auto gap-2 text-base font-body">
+                <FileDown className="w-5 h-5" />
+                Download Full Professional CV
+              </Button>
+            </a>
+            <p className="text-xs text-muted-foreground font-body italic">
+              For a complete portfolio of my 80+ regulatory submissions and therapeutic deep-dives, please contact me directly.
+            </p>
+          </div>
+
+          {/* Contact Card */}
+          <div className="flex-1 space-y-3 bg-accent/30 rounded-lg p-5 border border-primary/10">
+            <h3 className="font-display text-lg font-semibold text-foreground">Direct Contact</h3>
+            <div className="space-y-2 font-body text-sm">
+              <a href="mailto:maziluileana88@gmail.com" className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors">
+                <Mail className="w-4 h-4 text-primary" />
+                maziluileana88@gmail.com
+              </a>
+              <a href="tel:+40766687508" className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors">
+                <Phone className="w-4 h-4 text-primary" />
+                +40 766 687 508
+              </a>
+              <a href="https://www.linkedin.com/in/ileana-mazilu-aa211181" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors">
+                <Linkedin className="w-4 h-4 text-primary" />
+                LinkedIn Profile
+              </a>
+            </div>
+            <div className="pt-2">
+              <Badge variant="secondary" className="clinical-badge gap-1">
+                <CheckCircle className="w-3 h-3" />
+                Available for Senior Medical Writing Consultations
+              </Badge>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
