@@ -1,5 +1,7 @@
 import professionalPhoto from "@/assets/professional-photo.jpg";
 import { Badge } from "@/components/ui/badge";
+import { FileDown, Mail, Phone, Linkedin, CheckCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const stats = [
   { label: "Years in Pharma", value: "20+" },
