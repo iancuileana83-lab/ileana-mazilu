@@ -1,4 +1,4 @@
-import { FileText, Shield, Briefcase, User, Stethoscope } from "lucide-react";
+import { FileText, Shield, Briefcase, User, Stethoscope, FolderOpen } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import {
@@ -17,6 +17,7 @@ const navItems = [
   { title: "Clinical Evidence Vault", url: "/evidence", icon: FileText },
   { title: "Regulatory Credentials", url: "/credentials", icon: Shield },
   { title: "Services", url: "/services", icon: Briefcase },
+  { title: "Project Highlights", url: "/highlights", icon: FolderOpen },
 ];
 
 export function AppSidebar() {
