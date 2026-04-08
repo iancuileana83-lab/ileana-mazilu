@@ -107,9 +107,11 @@ export default function Services() {
         <p className="text-sm text-muted-foreground font-body mt-2 max-w-md mx-auto">
           I offer confidential initial consultations to assess your regulatory writing needs and provide a tailored project proposal.
         </p>
-        <Button className="mt-6 font-body" size="lg">
-          Request a Consultation <ArrowRight className="ml-2 w-4 h-4" />
-        </Button>
+        <a href="mailto:maziluileana88@gmail.com">
+          <Button className="mt-6 font-body" size="lg">
+            Get in Touch <ArrowRight className="ml-2 w-4 h-4" />
+          </Button>
+        </a>
       </div>
     </div>
   );

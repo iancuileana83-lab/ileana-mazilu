@@ -36,7 +36,7 @@ export function AppSidebar() {
             </div>
             {!collapsed && (
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-sidebar-accent-foreground truncate">Dr. Elena Vasquez</p>
+                <p className="text-sm font-semibold text-sidebar-accent-foreground truncate">Ileana Mazilu</p>
                 <p className="text-xs text-sidebar-foreground truncate">Medical Writer</p>
               </div>
             )}
