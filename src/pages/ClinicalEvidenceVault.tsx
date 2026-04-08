@@ -106,9 +106,9 @@ export default function ClinicalEvidenceVault() {
                 <span key={tag} className="clinical-badge text-[10px]">{tag}</span>
               ))}
             </div>
-            <button className="mt-3 flex items-center gap-1 text-xs text-primary font-semibold font-body opacity-0 group-hover:opacity-100 transition-opacity">
-              View Full Report <ExternalLink className="w-3 h-3" />
-            </button>
+            <a href="mailto:maziluileana88@gmail.com?subject=Request Full Report: ${encodeURIComponent(paper.title)}" className="mt-3 flex items-center gap-1 text-xs text-primary font-semibold font-body opacity-0 group-hover:opacity-100 transition-opacity">
+              Request Full Report <ExternalLink className="w-3 h-3" />
+            </a>
           </article>
         ))}
       </div>

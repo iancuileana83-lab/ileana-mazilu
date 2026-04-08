@@ -251,7 +251,7 @@ export default function ExecutiveSummary() {
                 <Phone className="w-4 h-4 text-primary" />
                 +40 766 687 508
               </a>
-              <a href="https://www.linkedin.com/in/ileana-mazilu-aa211181" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors">
+              <a href="https://www.linkedin.com/in/ileana-mazilu-aa211181/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors">
                 <Linkedin className="w-4 h-4 text-primary" />
                 LinkedIn Profile
               </a>
