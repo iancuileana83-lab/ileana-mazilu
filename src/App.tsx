@@ -9,6 +9,7 @@ import ClinicalEvidenceVault from "./pages/ClinicalEvidenceVault";
 import RegulatoryCredentials from "./pages/RegulatoryCredentials";
 import Services from "./pages/Services";
 import ProjectHighlights from "./pages/ProjectHighlights";
+import MedAdComplianceAI from "./pages/MedAdComplianceAI";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/credentials" element={<RegulatoryCredentials />} />
             <Route path="/services" element={<Services />} />
             <Route path="/highlights" element={<ProjectHighlights />} />
+            <Route path="/medad-ai" element={<MedAdComplianceAI />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AppLayout>
