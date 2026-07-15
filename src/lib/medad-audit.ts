@@ -490,26 +490,16 @@ export function runAudit(input: {
     }
   }
 
-  // Apply phrase-level rewrites to build the compliant copy.
-  const phraseRewrites: Finding[] = findings.map((f) => {
-    const rule = RULES.find((r) => r.category === f.category)!;
-    return { ...f, rewrite: rule.rewrite };
-  });
-  let finalCopy = applyRewrites(original, phraseRewrites);
-
-  // Append gating & risk disclosure if missing.
-  if (!HCP_GATING_RE.test(finalCopy)) {
-    finalCopy = finalCopy.replace(/\s*$/, "") + " For healthcare professionals.";
-  }
-  if (!RISK_DISCLOSURE_RE.test(finalCopy)) {
-    finalCopy =
-      finalCopy.replace(/\s*$/, "") +
-      " Consult the prescribing information for the full risk-benefit profile.";
-  }
+  // Synthesize a coherent, grammatical compliant paragraph (not in-place
+  // substitution — that produced broken grammar like "completely clinically
+  // studied to support"). The paragraph is built from signals extracted
+  // from the original and is guaranteed to include HCP gating and risk
+  // disclosure.
+  const finalCopy = synthesizeCompliantCopy(original, input.category, findings.length > 0);
 
   const phrasesChecked = RULES.length + 3; // rules + gating + risk + readability
   const checklist = buildChecklist(original, findings, input.frameworks);
-  const variants = buildVariants(finalCopy, input.category);
+  const variants = buildVariants(original, input.category, findings.length > 0);
 
   return {
     submittedAt: new Date(),
