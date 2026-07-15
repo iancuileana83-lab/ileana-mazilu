@@ -46,6 +46,56 @@ export default function MedAdComplianceAI() {
           </p>
         </section>
 
+        {/* WHY NOT JUST CHATGPT */}
+        <section className="relative px-6 md:px-12 py-16 max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-xs uppercase tracking-[0.3em] text-purple-300/80 mb-3">Direct Comparison</p>
+            <h2 className="font-display text-3xl md:text-4xl font-semibold text-white">
+              Why not just use <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-300">ChatGPT?</span>
+            </h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: FileWarning,
+                title: "Regulatory pattern library",
+                chatgpt: "ChatGPT doesn't know the specific FDA / EU MDR flagged phrases that trigger warning letters.",
+                us: "We've encoded real regulatory patterns from 15 years of clinical writing experience — the exact words, claims and structures that fail audits.",
+              },
+              {
+                icon: FileText,
+                title: "Audit trail, not just text",
+                chatgpt: "ChatGPT gives you text and moves on. No proof, no paper trail.",
+                us: "We give you a downloadable compliance audit PDF you can show clients or legal — every flag traced to the regulation it violates.",
+              },
+              {
+                icon: Repeat,
+                title: "Consistent agency workflow",
+                chatgpt: "ChatGPT starts from zero every time — different tone, different rules, different misses on every prompt.",
+                us: "We give consistent, repeatable checks built for agency workflows — the same guardrails apply on run #1 and run #500.",
+              },
+            ].map((c) => (
+              <div key={c.title} className="rounded-2xl p-[1px] bg-gradient-to-br from-purple-500/40 via-cyan-500/20 to-transparent">
+                <div className="rounded-2xl h-full bg-[#0a0d1e]/90 p-7 border border-white/5">
+                  <div className="w-11 h-11 rounded-xl bg-purple-500/10 text-purple-300 flex items-center justify-center mb-5">
+                    <c.icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-display text-lg font-semibold text-white mb-4">{c.title}</h3>
+                  <div className="flex gap-2 items-start mb-3">
+                    <XCircle className="w-4 h-4 text-slate-500 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-slate-400 leading-relaxed"><span className="text-slate-300 font-semibold">ChatGPT:</span> {c.chatgpt}</p>
+                  </div>
+                  <div className="flex gap-2 items-start">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-300 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-slate-300 leading-relaxed"><span className="text-cyan-300 font-semibold">MedAd AI:</span> {c.us}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+
         {/* WHY MEDAD */}
         <section className="relative px-6 md:px-12 py-16 max-w-6xl mx-auto">
           <div className="text-center mb-12">
