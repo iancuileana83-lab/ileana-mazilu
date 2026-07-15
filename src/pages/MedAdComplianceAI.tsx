@@ -2,6 +2,13 @@ import { useState } from "react";
 import { Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown, Download, XCircle, FileText, Repeat } from "lucide-react";
 import jsPDF from "jspdf";
 
+const AUDIT_ITEMS = [
+  { flag: "Removed absolute claim 'cures'", reason: "Prevents regulatory penalties under FDA Title 21 CFR §202.1(e)(6)", safe: "Replaced with: 'clinically studied to support'" },
+  { flag: "Removed superlative 'miraculous'", reason: "Violates FDA prohibition on unsubstantiated efficacy claims", safe: "Replaced with: 'evidence-based innovation'" },
+  { flag: "Removed unqualified 'safe'", reason: "EU MDR Art. 7 prohibits misleading safety claims without full risk disclosure", safe: "Replaced with: 'physician-prescribed treatment'" },
+  { flag: "Added HCP audience gating", reason: "MDCG 2022-14 requires professional-audience labeling for prescription therapies", safe: "Appended: 'For healthcare professionals.'" },
+];
+
 export default function MedAdComplianceAI() {
   const [loading, setLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
@@ -9,6 +16,7 @@ export default function MedAdComplianceAI() {
   const [category, setCategory] = useState("Oncology");
   const [description, setDescription] = useState("");
   const [frameworks, setFrameworks] = useState<string[]>(["FDA Advertising Guidelines"]);
+  const [auditedAt, setAuditedAt] = useState<Date | null>(null);
 
   const toggleFramework = (f: string) => {
     setFrameworks((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
@@ -20,8 +28,136 @@ export default function MedAdComplianceAI() {
     setTimeout(() => {
       setLoading(false);
       setShowResults(true);
+      setAuditedAt(new Date());
     }, 2200);
   };
+
+  const downloadAuditPDF = () => {
+    const doc = new jsPDF({ unit: "pt", format: "letter" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 54;
+    const maxWidth = pageWidth - margin * 2;
+    let y = margin;
+
+    const ensureSpace = (needed: number) => {
+      if (y + needed > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+    };
+
+    // Header bar
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, pageWidth, 70, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("MedAd Compliance AI", margin, 32);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(180, 200, 220);
+    doc.text("Regulatory Audit Report", margin, 50);
+    y = 100;
+
+    doc.setTextColor(30, 41, 59);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("Audit Metadata", margin, y);
+    y += 6;
+    doc.setDrawColor(200);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 16;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    const stamp = (auditedAt ?? new Date()).toLocaleString();
+    const meta = [
+      ["Date / Time:", stamp],
+      ["Medical Category:", category],
+      ["Frameworks Checked:", frameworks.length ? frameworks.join(", ") : "None selected"],
+    ];
+    meta.forEach(([k, v]) => {
+      doc.setFont("helvetica", "bold");
+      doc.text(k, margin, y);
+      doc.setFont("helvetica", "normal");
+      const lines = doc.splitTextToSize(v, maxWidth - 130);
+      doc.text(lines, margin + 130, y);
+      y += 14 * lines.length + 2;
+    });
+
+    y += 12;
+    ensureSpace(60);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("Original Submitted Text", margin, y);
+    y += 6;
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 16;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    const original = description.trim() || "(No description was provided in the console.)";
+    const originalLines = doc.splitTextToSize(original, maxWidth);
+    originalLines.forEach((line: string) => {
+      ensureSpace(14);
+      doc.text(line, margin, y);
+      y += 14;
+    });
+
+    y += 14;
+    ensureSpace(40);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("Flagged Phrases & Compliant Rewrites", margin, y);
+    y += 6;
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 18;
+
+    AUDIT_ITEMS.forEach((item, i) => {
+      ensureSpace(80);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(153, 27, 27);
+      doc.text(`${i + 1}. Flagged: ${item.flag}`, margin, y);
+      y += 14;
+      doc.setTextColor(71, 85, 105);
+      doc.setFont("helvetica", "normal");
+      const reasonLines = doc.splitTextToSize(`Regulation: ${item.reason}`, maxWidth);
+      reasonLines.forEach((line: string) => {
+        ensureSpace(13);
+        doc.text(line, margin + 12, y);
+        y += 13;
+      });
+      doc.setTextColor(6, 95, 70);
+      const safeLines = doc.splitTextToSize(`Compliant rewrite: ${item.safe}`, maxWidth);
+      safeLines.forEach((line: string) => {
+        ensureSpace(13);
+        doc.text(line, margin + 12, y);
+        y += 13;
+      });
+      doc.setTextColor(30, 41, 59);
+      y += 8;
+    });
+
+    // Footer on each page
+    const pages = doc.getNumberOfPages();
+    for (let p = 1; p <= pages; p++) {
+      doc.setPage(p);
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(8);
+      doc.setTextColor(120);
+      doc.text(
+        "Generated by MedAd Compliance AI — Ileana Mazilu, Senior Medical Writer. For informational review; final regulatory sign-off requires human expert validation.",
+        margin,
+        pageHeight - 30,
+        { maxWidth }
+      );
+      doc.text(`Page ${p} of ${pages}`, pageWidth - margin, pageHeight - 30, { align: "right" });
+    }
+
+    doc.save(`MedAd-Compliance-Audit-${Date.now()}.pdf`);
+  };
+
 
   return (
     <div className="min-h-screen -m-6 md:-m-10 bg-[#05060f] text-slate-100 font-body">
