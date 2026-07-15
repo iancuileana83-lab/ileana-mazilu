@@ -27,6 +27,7 @@ export default function MedAdComplianceAI() {
   };
 
   const downloadAuditPDF = () => {
+    if (!report) return;
     const doc = new jsPDF({ unit: "pt", format: "letter" });
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -39,6 +40,30 @@ export default function MedAdComplianceAI() {
         doc.addPage();
         y = margin;
       }
+    };
+
+    const drawSectionHeader = (label: string) => {
+      ensureSpace(40);
+      doc.setTextColor(30, 41, 59);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text(label, margin, y);
+      y += 6;
+      doc.setDrawColor(200);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 16;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+    };
+
+    const drawParagraph = (text: string, indent = 0, color: [number, number, number] = [30, 41, 59]) => {
+      doc.setTextColor(...color);
+      const lines = doc.splitTextToSize(text, maxWidth - indent);
+      lines.forEach((line: string) => {
+        ensureSpace(14);
+        doc.text(line, margin + indent, y);
+        y += 14;
+      });
     };
 
     // Header bar
@@ -54,83 +79,120 @@ export default function MedAdComplianceAI() {
     doc.text("Regulatory Audit Report", margin, 50);
     y = 100;
 
-    doc.setTextColor(30, 41, 59);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("Audit Metadata", margin, y);
-    y += 6;
-    doc.setDrawColor(200);
-    doc.line(margin, y, pageWidth - margin, y);
-    y += 16;
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    const stamp = (auditedAt ?? new Date()).toLocaleString();
-    const meta = [
-      ["Date / Time:", stamp],
-      ["Medical Category:", category],
-      ["Frameworks Checked:", frameworks.length ? frameworks.join(", ") : "None selected"],
+    // Metadata
+    drawSectionHeader("Audit Metadata");
+    const meta: [string, string][] = [
+      ["Date / Time:", report.submittedAt.toLocaleString()],
+      ["Medical Category:", report.category],
+      ["Frameworks Checked:", report.frameworks.length ? report.frameworks.join(", ") : "None selected"],
+      ["Auditor:", "MedAd Compliance AI — Ileana Mazilu, Senior Medical Writer"],
     ];
     meta.forEach(([k, v]) => {
+      ensureSpace(16);
       doc.setFont("helvetica", "bold");
       doc.text(k, margin, y);
       doc.setFont("helvetica", "normal");
-      const lines = doc.splitTextToSize(v, maxWidth - 130);
-      doc.text(lines, margin + 130, y);
+      const lines = doc.splitTextToSize(v, maxWidth - 140);
+      doc.text(lines, margin + 140, y);
       y += 14 * lines.length + 2;
     });
 
-    y += 12;
-    ensureSpace(60);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("Original Submitted Text", margin, y);
+    // Executive summary
+    y += 10;
+    drawSectionHeader("Executive Summary");
+    const critical = report.findings.filter((f) => f.severity === "Critical").length;
+    const high = report.findings.filter((f) => f.severity === "High").length;
+    const medium = report.findings.filter((f) => f.severity === "Medium").length;
+    const summary = [
+      `Pattern rules evaluated: ${report.phrasesChecked}`,
+      `Phrases flagged: ${report.flaggedCount}  (Critical: ${critical}, High: ${high}, Medium: ${medium})`,
+      `Compliance criteria passed: ${report.compliantCount} of ${report.checklist.length}`,
+      `Overall status: ${report.flaggedCount === 0 && report.compliantCount === report.checklist.length ? "PASS — ready for client review" : critical > 0 ? "BLOCK — critical violations require rewrite" : "REWRITE RECOMMENDED — flagged phrases replaced in compliant copy"}`,
+    ];
+    summary.forEach((line) => drawParagraph(line));
+
+    // Original submitted text
+    y += 10;
+    drawSectionHeader("Original Submitted Text");
+    drawParagraph(report.original);
+
+    // Flagged phrases
+    y += 10;
+    drawSectionHeader("Flagged Phrases — Severity, Regulation, Reason & Rewrite");
+    if (report.findings.length === 0) {
+      drawParagraph("No flagged phrases were detected in the submitted text.", 0, [6, 95, 70]);
+    } else {
+      report.findings.forEach((f, i) => {
+        ensureSpace(90);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(...severityColor(f.severity));
+        doc.text(`${i + 1}. [${f.severity}] "${f.phrase}" — ${f.category}`, margin, y);
+        y += 14;
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(71, 85, 105);
+        doc.text("Regulation:", margin + 12, y);
+        doc.setFont("helvetica", "normal");
+        drawParagraph(f.regulation, 90, [30, 41, 59]);
+        y -= 14; // drawParagraph advances; keep alignment consistent
+        y += 14;
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(71, 85, 105);
+        doc.text("Why it's risky:", margin + 12, y);
+        doc.setFont("helvetica", "normal");
+        y += 14;
+        drawParagraph(f.reason, 12, [51, 65, 85]);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(6, 95, 70);
+        doc.text("Suggested rewrite:", margin + 12, y);
+        doc.setFont("helvetica", "normal");
+        y += 14;
+        drawParagraph(f.rewrite, 12, [6, 95, 70]);
+        y += 6;
+      });
+    }
+
+    // Final compliant ad copy
     y += 6;
-    doc.line(margin, y, pageWidth - margin, y);
-    y += 16;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    const original = description.trim() || "(No description was provided in the console.)";
-    const originalLines = doc.splitTextToSize(original, maxWidth);
-    originalLines.forEach((line: string) => {
-      ensureSpace(14);
-      doc.text(line, margin, y);
+    drawSectionHeader("Final Compliant Ad Copy (Ready to Use)");
+    drawParagraph(report.finalCompliantCopy, 0, [15, 23, 42]);
+
+    // Platform-specific variants
+    y += 10;
+    drawSectionHeader("Platform-Specific Variants");
+    report.variants.forEach((v) => {
+      ensureSpace(40);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(30, 41, 59);
+      doc.text(v.label, margin, y);
       y += 14;
+      doc.setFont("helvetica", "normal");
+      drawParagraph(v.content, 12, [51, 65, 85]);
+      y += 6;
     });
 
-    y += 14;
-    ensureSpace(40);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("Flagged Phrases & Compliant Rewrites", margin, y);
+    // Compliance checklist
     y += 6;
-    doc.line(margin, y, pageWidth - margin, y);
-    y += 18;
-
-    AUDIT_ITEMS.forEach((item, i) => {
-      ensureSpace(80);
+    drawSectionHeader("Compliance Checklist — All Criteria Reviewed");
+    report.checklist.forEach((c) => {
+      ensureSpace(34);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      doc.setTextColor(153, 27, 27);
-      doc.text(`${i + 1}. Flagged: ${item.flag}`, margin, y);
-      y += 14;
-      doc.setTextColor(71, 85, 105);
+      if (c.passed) {
+        doc.setTextColor(6, 95, 70);
+        doc.text(`[PASS]  ${c.criterion}`, margin, y);
+      } else {
+        doc.setTextColor(153, 27, 27);
+        doc.text(`[FAIL]  ${c.criterion}`, margin, y);
+      }
+      y += 13;
       doc.setFont("helvetica", "normal");
-      const reasonLines = doc.splitTextToSize(`Regulation: ${item.reason}`, maxWidth);
-      reasonLines.forEach((line: string) => {
-        ensureSpace(13);
-        doc.text(line, margin + 12, y);
-        y += 13;
-      });
-      doc.setTextColor(6, 95, 70);
-      const safeLines = doc.splitTextToSize(`Compliant rewrite: ${item.safe}`, maxWidth);
-      safeLines.forEach((line: string) => {
-        ensureSpace(13);
-        doc.text(line, margin + 12, y);
-        y += 13;
-      });
-      doc.setTextColor(30, 41, 59);
-      y += 8;
+      doc.setTextColor(100, 116, 139);
+      doc.setFontSize(9);
+      doc.text(`Framework: ${c.framework}`, margin + 14, y);
+      y += 12;
+      doc.setFontSize(10);
+      drawParagraph(c.detail, 14, [51, 65, 85]);
+      y += 4;
     });
 
     // Footer on each page
@@ -141,7 +203,7 @@ export default function MedAdComplianceAI() {
       doc.setFontSize(8);
       doc.setTextColor(120);
       doc.text(
-        "Generated by MedAd Compliance AI — Ileana Mazilu, Senior Medical Writer. For informational review; final regulatory sign-off requires human expert validation.",
+        "Generated by MedAd Compliance AI — Ileana Mazilu, Senior Medical Writer. Automated review; final regulatory sign-off requires human expert validation.",
         margin,
         pageHeight - 30,
         { maxWidth }
