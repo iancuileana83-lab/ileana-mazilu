@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown } from "lucide-react";
+import { Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown, Download, XCircle, FileText, Repeat } from "lucide-react";
+import jsPDF from "jspdf";
+
+const AUDIT_ITEMS = [
+  { flag: "Removed absolute claim 'cures'", reason: "Prevents regulatory penalties under FDA Title 21 CFR §202.1(e)(6)", safe: "Replaced with: 'clinically studied to support'" },
+  { flag: "Removed superlative 'miraculous'", reason: "Violates FDA prohibition on unsubstantiated efficacy claims", safe: "Replaced with: 'evidence-based innovation'" },
+  { flag: "Removed unqualified 'safe'", reason: "EU MDR Art. 7 prohibits misleading safety claims without full risk disclosure", safe: "Replaced with: 'physician-prescribed treatment'" },
+  { flag: "Added HCP audience gating", reason: "MDCG 2022-14 requires professional-audience labeling for prescription therapies", safe: "Appended: 'For healthcare professionals.'" },
+];
 
 export default function MedAdComplianceAI() {
   const [loading, setLoading] = useState(false);
@@ -8,6 +16,7 @@ export default function MedAdComplianceAI() {
   const [category, setCategory] = useState("Oncology");
   const [description, setDescription] = useState("");
   const [frameworks, setFrameworks] = useState<string[]>(["FDA Advertising Guidelines"]);
+  const [auditedAt, setAuditedAt] = useState<Date | null>(null);
 
   const toggleFramework = (f: string) => {
     setFrameworks((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
@@ -19,8 +28,136 @@ export default function MedAdComplianceAI() {
     setTimeout(() => {
       setLoading(false);
       setShowResults(true);
+      setAuditedAt(new Date());
     }, 2200);
   };
+
+  const downloadAuditPDF = () => {
+    const doc = new jsPDF({ unit: "pt", format: "letter" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 54;
+    const maxWidth = pageWidth - margin * 2;
+    let y = margin;
+
+    const ensureSpace = (needed: number) => {
+      if (y + needed > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+    };
+
+    // Header bar
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, pageWidth, 70, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("MedAd Compliance AI", margin, 32);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(180, 200, 220);
+    doc.text("Regulatory Audit Report", margin, 50);
+    y = 100;
+
+    doc.setTextColor(30, 41, 59);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("Audit Metadata", margin, y);
+    y += 6;
+    doc.setDrawColor(200);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 16;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    const stamp = (auditedAt ?? new Date()).toLocaleString();
+    const meta = [
+      ["Date / Time:", stamp],
+      ["Medical Category:", category],
+      ["Frameworks Checked:", frameworks.length ? frameworks.join(", ") : "None selected"],
+    ];
+    meta.forEach(([k, v]) => {
+      doc.setFont("helvetica", "bold");
+      doc.text(k, margin, y);
+      doc.setFont("helvetica", "normal");
+      const lines = doc.splitTextToSize(v, maxWidth - 130);
+      doc.text(lines, margin + 130, y);
+      y += 14 * lines.length + 2;
+    });
+
+    y += 12;
+    ensureSpace(60);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("Original Submitted Text", margin, y);
+    y += 6;
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 16;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    const original = description.trim() || "(No description was provided in the console.)";
+    const originalLines = doc.splitTextToSize(original, maxWidth);
+    originalLines.forEach((line: string) => {
+      ensureSpace(14);
+      doc.text(line, margin, y);
+      y += 14;
+    });
+
+    y += 14;
+    ensureSpace(40);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("Flagged Phrases & Compliant Rewrites", margin, y);
+    y += 6;
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 18;
+
+    AUDIT_ITEMS.forEach((item, i) => {
+      ensureSpace(80);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(153, 27, 27);
+      doc.text(`${i + 1}. Flagged: ${item.flag}`, margin, y);
+      y += 14;
+      doc.setTextColor(71, 85, 105);
+      doc.setFont("helvetica", "normal");
+      const reasonLines = doc.splitTextToSize(`Regulation: ${item.reason}`, maxWidth);
+      reasonLines.forEach((line: string) => {
+        ensureSpace(13);
+        doc.text(line, margin + 12, y);
+        y += 13;
+      });
+      doc.setTextColor(6, 95, 70);
+      const safeLines = doc.splitTextToSize(`Compliant rewrite: ${item.safe}`, maxWidth);
+      safeLines.forEach((line: string) => {
+        ensureSpace(13);
+        doc.text(line, margin + 12, y);
+        y += 13;
+      });
+      doc.setTextColor(30, 41, 59);
+      y += 8;
+    });
+
+    // Footer on each page
+    const pages = doc.getNumberOfPages();
+    for (let p = 1; p <= pages; p++) {
+      doc.setPage(p);
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(8);
+      doc.setTextColor(120);
+      doc.text(
+        "Generated by MedAd Compliance AI — Ileana Mazilu, Senior Medical Writer. For informational review; final regulatory sign-off requires human expert validation.",
+        margin,
+        pageHeight - 30,
+        { maxWidth }
+      );
+      doc.text(`Page ${p} of ${pages}`, pageWidth - margin, pageHeight - 30, { align: "right" });
+    }
+
+    doc.save(`MedAd-Compliance-Audit-${Date.now()}.pdf`);
+  };
+
 
   return (
     <div className="min-h-screen -m-6 md:-m-10 bg-[#05060f] text-slate-100 font-body">
@@ -41,9 +178,59 @@ export default function MedAdComplianceAI() {
             MedAd Compliance AI — Speed of Generative AI + Regulatory Safety of a Senior Pharmacist
           </h1>
           <p className="mt-6 text-lg md:text-xl text-slate-300/90 max-w-3xl">
-            An intelligent, Gemini-powered alignment tool that automatically generates and audits medical ad copy to prevent legal hallucinations, FDA warnings, and EU EUDAMED compliance violations.
+            An intelligent, Gemini-powered alignment tool that automatically generates and audits medical ad copy to prevent legal hallucinations, FDA warnings, and EU MDR compliance violations.
           </p>
         </section>
+
+        {/* WHY NOT JUST CHATGPT */}
+        <section className="relative px-6 md:px-12 py-16 max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-xs uppercase tracking-[0.3em] text-purple-300/80 mb-3">Direct Comparison</p>
+            <h2 className="font-display text-3xl md:text-4xl font-semibold text-white">
+              Why not just use <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-300">ChatGPT?</span>
+            </h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: FileWarning,
+                title: "Regulatory pattern library",
+                chatgpt: "ChatGPT doesn't know the specific FDA / EU MDR flagged phrases that trigger warning letters.",
+                us: "We've encoded real regulatory patterns from 15 years of clinical writing experience — the exact words, claims and structures that fail audits.",
+              },
+              {
+                icon: FileText,
+                title: "Audit trail, not just text",
+                chatgpt: "ChatGPT gives you text and moves on. No proof, no paper trail.",
+                us: "We give you a downloadable compliance audit PDF you can show clients or legal — every flag traced to the regulation it violates.",
+              },
+              {
+                icon: Repeat,
+                title: "Consistent agency workflow",
+                chatgpt: "ChatGPT starts from zero every time — different tone, different rules, different misses on every prompt.",
+                us: "We give consistent, repeatable checks built for agency workflows — the same guardrails apply on run #1 and run #500.",
+              },
+            ].map((c) => (
+              <div key={c.title} className="rounded-2xl p-[1px] bg-gradient-to-br from-purple-500/40 via-cyan-500/20 to-transparent">
+                <div className="rounded-2xl h-full bg-[#0a0d1e]/90 p-7 border border-white/5">
+                  <div className="w-11 h-11 rounded-xl bg-purple-500/10 text-purple-300 flex items-center justify-center mb-5">
+                    <c.icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-display text-lg font-semibold text-white mb-4">{c.title}</h3>
+                  <div className="flex gap-2 items-start mb-3">
+                    <XCircle className="w-4 h-4 text-slate-500 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-slate-400 leading-relaxed"><span className="text-slate-300 font-semibold">ChatGPT:</span> {c.chatgpt}</p>
+                  </div>
+                  <div className="flex gap-2 items-start">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-300 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-slate-300 leading-relaxed"><span className="text-cyan-300 font-semibold">MedAd AI:</span> {c.us}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
 
         {/* WHY MEDAD */}
         <section className="relative px-6 md:px-12 py-16 max-w-6xl mx-auto">
@@ -182,12 +369,7 @@ export default function MedAdComplianceAI() {
                     <h4 className="font-display text-lg text-amber-200">Automated Regulatory Audit Trail</h4>
                   </div>
                   <ul className="space-y-4">
-                    {[
-                      { flag: "Removed absolute claim 'cures'", reason: "Prevents regulatory penalties under FDA Title 21 CFR §202.1(e)(6)", safe: "Replaced with: 'clinically studied to support'" },
-                      { flag: "Removed superlative 'miraculous'", reason: "Violates FDA prohibition on unsubstantiated efficacy claims", safe: "Replaced with: 'evidence-based innovation'" },
-                      { flag: "Removed unqualified 'safe'", reason: "EU MDR Art. 7 prohibits misleading safety claims without full risk disclosure", safe: "Replaced with: 'physician-prescribed treatment'" },
-                      { flag: "Added HCP audience gating", reason: "MDCG 2022-14 requires professional-audience labeling for prescription therapies", safe: "Appended: 'For healthcare professionals.'" },
-                    ].map((item, i) => (
+                    {AUDIT_ITEMS.map((item, i) => (
                       <li key={i} className="rounded-lg bg-[#0a0d1e]/60 border border-amber-500/20 p-4">
                         <div className="flex items-start gap-3">
                           <FileWarning className="w-4 h-4 text-amber-400 mt-1 flex-shrink-0" />
@@ -202,9 +384,23 @@ export default function MedAdComplianceAI() {
                   </ul>
                 </div>
               )}
+
+              <div className="p-6 border-t border-white/10 bg-[#05060f]/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="text-xs text-slate-400">
+                  {auditedAt && <>Audit generated {auditedAt.toLocaleString()} · Frameworks: {frameworks.join(", ") || "—"}</>}
+                </div>
+                <button
+                  onClick={downloadAuditPDF}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white font-semibold text-sm shadow-[0_0_30px_-10px_rgba(34,211,238,0.6)] transition"
+                >
+                  <Download className="w-4 h-4" />
+                  Download Compliance Audit PDF
+                </button>
+              </div>
             </div>
           )}
         </section>
+
 
         {/* CTA */}
         <section className="relative px-6 md:px-12 py-16 max-w-5xl mx-auto">

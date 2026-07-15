@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import professionalPhoto from "@/assets/professional-photo.jpg";
 import { Badge } from "@/components/ui/badge";
-import { FileDown, Mail, Phone, Linkedin, CheckCircle, FlaskConical, Search, LayoutGrid, Download } from "lucide-react";
+import { FileDown, Mail, Phone, Linkedin, CheckCircle, FlaskConical, Search, LayoutGrid, Download, Sparkles, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -27,9 +28,19 @@ export default function ExecutiveSummary() {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Document Header */}
-      <div className="report-header">
-        <p className="report-label">Section 1.0</p>
-        <h1 className="report-title font-display text-3xl">Executive Summary</h1>
+      <div className="report-header flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <p className="report-label">Section 1.0</p>
+          <h1 className="report-title font-display text-3xl">Executive Summary</h1>
+        </div>
+        <Link
+          to="/medad-ai"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold text-sm shadow-md hover:shadow-lg hover:from-cyan-400 hover:to-purple-400 transition"
+        >
+          <Sparkles className="w-4 h-4" />
+          Try MedAd Compliance AI
+          <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
 
       {/* Profile Card */}
