@@ -369,12 +369,7 @@ export default function MedAdComplianceAI() {
                     <h4 className="font-display text-lg text-amber-200">Automated Regulatory Audit Trail</h4>
                   </div>
                   <ul className="space-y-4">
-                    {[
-                      { flag: "Removed absolute claim 'cures'", reason: "Prevents regulatory penalties under FDA Title 21 CFR §202.1(e)(6)", safe: "Replaced with: 'clinically studied to support'" },
-                      { flag: "Removed superlative 'miraculous'", reason: "Violates FDA prohibition on unsubstantiated efficacy claims", safe: "Replaced with: 'evidence-based innovation'" },
-                      { flag: "Removed unqualified 'safe'", reason: "EU MDR Art. 7 prohibits misleading safety claims without full risk disclosure", safe: "Replaced with: 'physician-prescribed treatment'" },
-                      { flag: "Added HCP audience gating", reason: "MDCG 2022-14 requires professional-audience labeling for prescription therapies", safe: "Appended: 'For healthcare professionals.'" },
-                    ].map((item, i) => (
+                    {AUDIT_ITEMS.map((item, i) => (
                       <li key={i} className="rounded-lg bg-[#0a0d1e]/60 border border-amber-500/20 p-4">
                         <div className="flex items-start gap-3">
                           <FileWarning className="w-4 h-4 text-amber-400 mt-1 flex-shrink-0" />
