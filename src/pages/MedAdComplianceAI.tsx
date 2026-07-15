@@ -1,22 +1,15 @@
 import { useState } from "react";
 import { Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown, Download, XCircle, FileText, Repeat } from "lucide-react";
 import jsPDF from "jspdf";
-
-const AUDIT_ITEMS = [
-  { flag: "Removed absolute claim 'cures'", reason: "Prevents regulatory penalties under FDA Title 21 CFR §202.1(e)(6)", safe: "Replaced with: 'clinically studied to support'" },
-  { flag: "Removed superlative 'miraculous'", reason: "Violates FDA prohibition on unsubstantiated efficacy claims", safe: "Replaced with: 'evidence-based innovation'" },
-  { flag: "Removed unqualified 'safe'", reason: "EU MDR Art. 7 prohibits misleading safety claims without full risk disclosure", safe: "Replaced with: 'physician-prescribed treatment'" },
-  { flag: "Added HCP audience gating", reason: "MDCG 2022-14 requires professional-audience labeling for prescription therapies", safe: "Appended: 'For healthcare professionals.'" },
-];
+import { runAudit, severityColor, type AuditReport } from "@/lib/medad-audit";
 
 export default function MedAdComplianceAI() {
   const [loading, setLoading] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  const [activeTab, setActiveTab] = useState<"outputs" | "audit">("outputs");
+  const [activeTab, setActiveTab] = useState<"outputs" | "audit" | "checklist">("outputs");
   const [category, setCategory] = useState("Oncology");
   const [description, setDescription] = useState("");
   const [frameworks, setFrameworks] = useState<string[]>(["FDA Advertising Guidelines"]);
-  const [auditedAt, setAuditedAt] = useState<Date | null>(null);
+  const [report, setReport] = useState<AuditReport | null>(null);
 
   const toggleFramework = (f: string) => {
     setFrameworks((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
@@ -24,15 +17,17 @@ export default function MedAdComplianceAI() {
 
   const handleGenerate = () => {
     setLoading(true);
-    setShowResults(false);
+    setReport(null);
     setTimeout(() => {
+      const r = runAudit({ description, category, frameworks });
+      setReport(r);
+      setActiveTab("outputs");
       setLoading(false);
-      setShowResults(true);
-      setAuditedAt(new Date());
     }, 2200);
   };
 
   const downloadAuditPDF = () => {
+    if (!report) return;
     const doc = new jsPDF({ unit: "pt", format: "letter" });
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -45,6 +40,30 @@ export default function MedAdComplianceAI() {
         doc.addPage();
         y = margin;
       }
+    };
+
+    const drawSectionHeader = (label: string) => {
+      ensureSpace(40);
+      doc.setTextColor(30, 41, 59);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text(label, margin, y);
+      y += 6;
+      doc.setDrawColor(200);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 16;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+    };
+
+    const drawParagraph = (text: string, indent = 0, color: [number, number, number] = [30, 41, 59]) => {
+      doc.setTextColor(...color);
+      const lines = doc.splitTextToSize(text, maxWidth - indent);
+      lines.forEach((line: string) => {
+        ensureSpace(14);
+        doc.text(line, margin + indent, y);
+        y += 14;
+      });
     };
 
     // Header bar
@@ -60,83 +79,120 @@ export default function MedAdComplianceAI() {
     doc.text("Regulatory Audit Report", margin, 50);
     y = 100;
 
-    doc.setTextColor(30, 41, 59);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("Audit Metadata", margin, y);
-    y += 6;
-    doc.setDrawColor(200);
-    doc.line(margin, y, pageWidth - margin, y);
-    y += 16;
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    const stamp = (auditedAt ?? new Date()).toLocaleString();
-    const meta = [
-      ["Date / Time:", stamp],
-      ["Medical Category:", category],
-      ["Frameworks Checked:", frameworks.length ? frameworks.join(", ") : "None selected"],
+    // Metadata
+    drawSectionHeader("Audit Metadata");
+    const meta: [string, string][] = [
+      ["Date / Time:", report.submittedAt.toLocaleString()],
+      ["Medical Category:", report.category],
+      ["Frameworks Checked:", report.frameworks.length ? report.frameworks.join(", ") : "None selected"],
+      ["Auditor:", "MedAd Compliance AI — Ileana Mazilu, Senior Medical Writer"],
     ];
     meta.forEach(([k, v]) => {
+      ensureSpace(16);
       doc.setFont("helvetica", "bold");
       doc.text(k, margin, y);
       doc.setFont("helvetica", "normal");
-      const lines = doc.splitTextToSize(v, maxWidth - 130);
-      doc.text(lines, margin + 130, y);
+      const lines = doc.splitTextToSize(v, maxWidth - 140);
+      doc.text(lines, margin + 140, y);
       y += 14 * lines.length + 2;
     });
 
-    y += 12;
-    ensureSpace(60);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("Original Submitted Text", margin, y);
+    // Executive summary
+    y += 10;
+    drawSectionHeader("Executive Summary");
+    const critical = report.findings.filter((f) => f.severity === "Critical").length;
+    const high = report.findings.filter((f) => f.severity === "High").length;
+    const medium = report.findings.filter((f) => f.severity === "Medium").length;
+    const summary = [
+      `Pattern rules evaluated: ${report.phrasesChecked}`,
+      `Phrases flagged: ${report.flaggedCount}  (Critical: ${critical}, High: ${high}, Medium: ${medium})`,
+      `Compliance criteria passed: ${report.compliantCount} of ${report.checklist.length}`,
+      `Overall status: ${report.flaggedCount === 0 && report.compliantCount === report.checklist.length ? "PASS — ready for client review" : critical > 0 ? "BLOCK — critical violations require rewrite" : "REWRITE RECOMMENDED — flagged phrases replaced in compliant copy"}`,
+    ];
+    summary.forEach((line) => drawParagraph(line));
+
+    // Original submitted text
+    y += 10;
+    drawSectionHeader("Original Submitted Text");
+    drawParagraph(report.original);
+
+    // Flagged phrases
+    y += 10;
+    drawSectionHeader("Flagged Phrases — Severity, Regulation, Reason & Rewrite");
+    if (report.findings.length === 0) {
+      drawParagraph("No flagged phrases were detected in the submitted text.", 0, [6, 95, 70]);
+    } else {
+      report.findings.forEach((f, i) => {
+        ensureSpace(90);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(...severityColor(f.severity));
+        doc.text(`${i + 1}. [${f.severity}] "${f.phrase}" — ${f.category}`, margin, y);
+        y += 14;
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(71, 85, 105);
+        doc.text("Regulation:", margin + 12, y);
+        doc.setFont("helvetica", "normal");
+        drawParagraph(f.regulation, 90, [30, 41, 59]);
+        y -= 14; // drawParagraph advances; keep alignment consistent
+        y += 14;
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(71, 85, 105);
+        doc.text("Why it's risky:", margin + 12, y);
+        doc.setFont("helvetica", "normal");
+        y += 14;
+        drawParagraph(f.reason, 12, [51, 65, 85]);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(6, 95, 70);
+        doc.text("Suggested rewrite:", margin + 12, y);
+        doc.setFont("helvetica", "normal");
+        y += 14;
+        drawParagraph(f.rewrite, 12, [6, 95, 70]);
+        y += 6;
+      });
+    }
+
+    // Final compliant ad copy
     y += 6;
-    doc.line(margin, y, pageWidth - margin, y);
-    y += 16;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    const original = description.trim() || "(No description was provided in the console.)";
-    const originalLines = doc.splitTextToSize(original, maxWidth);
-    originalLines.forEach((line: string) => {
-      ensureSpace(14);
-      doc.text(line, margin, y);
+    drawSectionHeader("Final Compliant Ad Copy (Ready to Use)");
+    drawParagraph(report.finalCompliantCopy, 0, [15, 23, 42]);
+
+    // Platform-specific variants
+    y += 10;
+    drawSectionHeader("Platform-Specific Variants");
+    report.variants.forEach((v) => {
+      ensureSpace(40);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(30, 41, 59);
+      doc.text(v.label, margin, y);
       y += 14;
+      doc.setFont("helvetica", "normal");
+      drawParagraph(v.content, 12, [51, 65, 85]);
+      y += 6;
     });
 
-    y += 14;
-    ensureSpace(40);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("Flagged Phrases & Compliant Rewrites", margin, y);
+    // Compliance checklist
     y += 6;
-    doc.line(margin, y, pageWidth - margin, y);
-    y += 18;
-
-    AUDIT_ITEMS.forEach((item, i) => {
-      ensureSpace(80);
+    drawSectionHeader("Compliance Checklist — All Criteria Reviewed");
+    report.checklist.forEach((c) => {
+      ensureSpace(34);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      doc.setTextColor(153, 27, 27);
-      doc.text(`${i + 1}. Flagged: ${item.flag}`, margin, y);
-      y += 14;
-      doc.setTextColor(71, 85, 105);
+      if (c.passed) {
+        doc.setTextColor(6, 95, 70);
+        doc.text(`[PASS]  ${c.criterion}`, margin, y);
+      } else {
+        doc.setTextColor(153, 27, 27);
+        doc.text(`[FAIL]  ${c.criterion}`, margin, y);
+      }
+      y += 13;
       doc.setFont("helvetica", "normal");
-      const reasonLines = doc.splitTextToSize(`Regulation: ${item.reason}`, maxWidth);
-      reasonLines.forEach((line: string) => {
-        ensureSpace(13);
-        doc.text(line, margin + 12, y);
-        y += 13;
-      });
-      doc.setTextColor(6, 95, 70);
-      const safeLines = doc.splitTextToSize(`Compliant rewrite: ${item.safe}`, maxWidth);
-      safeLines.forEach((line: string) => {
-        ensureSpace(13);
-        doc.text(line, margin + 12, y);
-        y += 13;
-      });
-      doc.setTextColor(30, 41, 59);
-      y += 8;
+      doc.setTextColor(100, 116, 139);
+      doc.setFontSize(9);
+      doc.text(`Framework: ${c.framework}`, margin + 14, y);
+      y += 12;
+      doc.setFontSize(10);
+      drawParagraph(c.detail, 14, [51, 65, 85]);
+      y += 4;
     });
 
     // Footer on each page
@@ -147,7 +203,7 @@ export default function MedAdComplianceAI() {
       doc.setFontSize(8);
       doc.setTextColor(120);
       doc.text(
-        "Generated by MedAd Compliance AI — Ileana Mazilu, Senior Medical Writer. For informational review; final regulatory sign-off requires human expert validation.",
+        "Generated by MedAd Compliance AI — Ileana Mazilu, Senior Medical Writer. Automated review; final regulatory sign-off requires human expert validation.",
         margin,
         pageHeight - 30,
         { maxWidth }
@@ -328,8 +384,23 @@ export default function MedAdComplianceAI() {
           </div>
 
           {/* RESULTS */}
-          {showResults && (
+          {report && (
             <div className="mt-10 rounded-3xl border border-white/10 bg-[#0a0d1e]/70 overflow-hidden animate-fade-in">
+              {/* Executive summary strip */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5">
+                {[
+                  { label: "Rules evaluated", value: report.phrasesChecked, color: "text-slate-200" },
+                  { label: "Phrases flagged", value: report.flaggedCount, color: report.flaggedCount === 0 ? "text-emerald-300" : "text-amber-300" },
+                  { label: "Critical / High", value: `${report.findings.filter((f) => f.severity === "Critical").length} / ${report.findings.filter((f) => f.severity === "High").length}`, color: "text-rose-300" },
+                  { label: "Checklist passed", value: `${report.compliantCount} / ${report.checklist.length}`, color: "text-cyan-300" },
+                ].map((s) => (
+                  <div key={s.label} className="bg-[#0a0d1e] px-5 py-4">
+                    <p className="text-[10px] uppercase tracking-widest text-slate-500">{s.label}</p>
+                    <p className={`font-display text-2xl mt-1 ${s.color}`}>{s.value}</p>
+                  </div>
+                ))}
+              </div>
+
               <div className="flex border-b border-white/10">
                 <button
                   onClick={() => setActiveTab("outputs")}
@@ -341,24 +412,28 @@ export default function MedAdComplianceAI() {
                   onClick={() => setActiveTab("audit")}
                   className={`flex-1 px-6 py-4 text-sm font-medium transition ${activeTab === "audit" ? "bg-amber-500/10 text-amber-300 border-b-2 border-amber-400" : "text-slate-400 hover:text-white"}`}
                 >
-                  Compliance & Safety Audit
+                  Flagged Phrases ({report.flaggedCount})
+                </button>
+                <button
+                  onClick={() => setActiveTab("checklist")}
+                  className={`flex-1 px-6 py-4 text-sm font-medium transition ${activeTab === "checklist" ? "bg-emerald-500/10 text-emerald-300 border-b-2 border-emerald-400" : "text-slate-400 hover:text-white"}`}
+                >
+                  Compliance Checklist
                 </button>
               </div>
 
               {activeTab === "outputs" && (
                 <div className="p-8 space-y-5">
-                  <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-5">
-                    <p className="text-xs uppercase tracking-widest text-cyan-300 mb-2">Social Hook 01 · Instagram</p>
-                    <p className="text-slate-100">"Precision oncology, redefined. Our targeted therapy is clinically studied to support HER2+ patients — talk to your oncologist about eligibility today."</p>
+                  <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/[0.06] p-5">
+                    <p className="text-xs uppercase tracking-widest text-emerald-300 mb-2">Final Compliant Ad Copy · Ready to Use</p>
+                    <p className="text-slate-100 whitespace-pre-wrap leading-relaxed">{report.finalCompliantCopy}</p>
                   </div>
-                  <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-5">
-                    <p className="text-xs uppercase tracking-widest text-cyan-300 mb-2">Social Hook 02 · LinkedIn</p>
-                    <p className="text-slate-100">"A new chapter in HER2+ care: evidence-based innovation designed with oncologists, for oncologists. Explore the clinical dossier →"</p>
-                  </div>
-                  <div className="rounded-xl border border-purple-400/20 bg-purple-400/5 p-5">
-                    <p className="text-xs uppercase tracking-widest text-purple-300 mb-2">Google Ads Text</p>
-                    <p className="text-slate-100"><span className="font-semibold">Headline:</span> HER2+ Targeted Therapy | Clinically Studied Option<br /><span className="font-semibold">Description:</span> Learn about a physician-prescribed treatment supported by peer-reviewed clinical data. For healthcare professionals.</p>
-                  </div>
+                  {report.variants.map((v) => (
+                    <div key={v.platform} className={`rounded-xl border p-5 ${v.platform === "Google Ads" ? "border-purple-400/20 bg-purple-400/5" : "border-cyan-400/20 bg-cyan-400/5"}`}>
+                      <p className={`text-xs uppercase tracking-widest mb-2 ${v.platform === "Google Ads" ? "text-purple-300" : "text-cyan-300"}`}>{v.label}</p>
+                      <p className="text-slate-100 whitespace-pre-wrap">{v.content}</p>
+                    </div>
+                  ))}
                 </div>
               )}
 
@@ -368,26 +443,56 @@ export default function MedAdComplianceAI() {
                     <AlertTriangle className="w-5 h-5 text-amber-400" />
                     <h4 className="font-display text-lg text-amber-200">Automated Regulatory Audit Trail</h4>
                   </div>
-                  <ul className="space-y-4">
-                    {AUDIT_ITEMS.map((item, i) => (
-                      <li key={i} className="rounded-lg bg-[#0a0d1e]/60 border border-amber-500/20 p-4">
-                        <div className="flex items-start gap-3">
-                          <FileWarning className="w-4 h-4 text-amber-400 mt-1 flex-shrink-0" />
-                          <div className="flex-1">
-                            <p className="text-sm text-amber-100 font-semibold">Flagged: {item.flag}</p>
-                            <p className="text-xs text-slate-400 mt-1">{item.reason}</p>
-                            <p className="text-xs text-emerald-300 mt-2 flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" /> {item.safe}</p>
-                          </div>
+                  {report.findings.length === 0 ? (
+                    <p className="text-sm text-emerald-300 flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> No flagged phrases detected in the submitted text.</p>
+                  ) : (
+                    <ul className="space-y-4">
+                      {report.findings.map((f, i) => {
+                        const sevColor = f.severity === "Critical" ? "bg-rose-500/15 text-rose-300 border-rose-400/40" : f.severity === "High" ? "bg-amber-500/15 text-amber-300 border-amber-400/40" : "bg-yellow-500/10 text-yellow-200 border-yellow-400/30";
+                        return (
+                          <li key={i} className="rounded-lg bg-[#0a0d1e]/60 border border-amber-500/20 p-4">
+                            <div className="flex items-start gap-3">
+                              <FileWarning className="w-4 h-4 text-amber-400 mt-1 flex-shrink-0" />
+                              <div className="flex-1">
+                                <div className="flex flex-wrap items-center gap-2 mb-1">
+                                  <span className={`text-[10px] uppercase tracking-widest px-2 py-0.5 rounded border ${sevColor}`}>{f.severity}</span>
+                                  <p className="text-sm text-amber-100 font-semibold">"{f.phrase}"</p>
+                                  <span className="text-xs text-slate-500">· {f.category}</span>
+                                </div>
+                                <p className="text-xs text-slate-400 mt-1"><span className="text-slate-300 font-semibold">Regulation:</span> {f.regulation}</p>
+                                <p className="text-xs text-slate-400 mt-1"><span className="text-slate-300 font-semibold">Why it's risky:</span> {f.reason}</p>
+                                <p className="text-xs text-emerald-300 mt-2 flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5" /> <span><span className="font-semibold">Rewrite:</span> {f.rewrite}</span></p>
+                              </div>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
+              )}
+
+              {activeTab === "checklist" && (
+                <div className="p-8 space-y-3">
+                  {report.checklist.map((c, i) => (
+                    <div key={i} className={`rounded-lg border p-4 flex items-start gap-3 ${c.passed ? "border-emerald-500/20 bg-emerald-500/[0.04]" : "border-rose-500/25 bg-rose-500/[0.05]"}`}>
+                      {c.passed ? <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" /> : <XCircle className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />}
+                      <div className="flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className={`text-sm font-semibold ${c.passed ? "text-emerald-200" : "text-rose-200"}`}>{c.criterion}</p>
+                          <span className={`text-[10px] uppercase tracking-widest px-2 py-0.5 rounded ${c.passed ? "bg-emerald-500/15 text-emerald-300" : "bg-rose-500/15 text-rose-300"}`}>{c.passed ? "Pass" : "Fail"}</span>
                         </div>
-                      </li>
-                    ))}
-                  </ul>
+                        <p className="text-xs text-slate-500 mt-1">{c.framework}</p>
+                        <p className="text-xs text-slate-400 mt-1">{c.detail}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
 
               <div className="p-6 border-t border-white/10 bg-[#05060f]/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="text-xs text-slate-400">
-                  {auditedAt && <>Audit generated {auditedAt.toLocaleString()} · Frameworks: {frameworks.join(", ") || "—"}</>}
+                  Audit generated {report.submittedAt.toLocaleString()} · Frameworks: {report.frameworks.join(", ") || "—"}
                 </div>
                 <button
                   onClick={downloadAuditPDF}
