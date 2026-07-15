@@ -340,7 +340,7 @@ function fitToLimit(text: string, limit: number): string {
 }
 
 function buildVariants(original: string, category: string, hasFindings: boolean): PlatformVariant[] {
-  const { product, indication } = extractSignals(original);
+  const { product, indication } = extractSignals(original, category);
   const audience = audienceForCategory(category);
   const shortProduct = product.length > 18 ? product.split(/\s+/)[0] : product;
 
