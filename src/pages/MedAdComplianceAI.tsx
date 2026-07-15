@@ -384,9 +384,23 @@ export default function MedAdComplianceAI() {
                   </ul>
                 </div>
               )}
+
+              <div className="p-6 border-t border-white/10 bg-[#05060f]/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="text-xs text-slate-400">
+                  {auditedAt && <>Audit generated {auditedAt.toLocaleString()} · Frameworks: {frameworks.join(", ") || "—"}</>}
+                </div>
+                <button
+                  onClick={downloadAuditPDF}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white font-semibold text-sm shadow-[0_0_30px_-10px_rgba(34,211,238,0.6)] transition"
+                >
+                  <Download className="w-4 h-4" />
+                  Download Compliance Audit PDF
+                </button>
+              </div>
             </div>
           )}
         </section>
+
 
         {/* CTA */}
         <section className="relative px-6 md:px-12 py-16 max-w-5xl mx-auto">
