@@ -163,42 +163,183 @@ function tokenCount(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-function applyRewrites(text: string, findings: Finding[]): string {
-  let out = text;
-  // Replace each unique phrase (case-insensitive) once per occurrence.
-  const seenReplacements = new Map<string, string>();
-  for (const f of findings) {
-    const key = f.phrase.toLowerCase();
-    if (!seenReplacements.has(key)) seenReplacements.set(key, f.rewrite);
-  }
-  for (const [phrase, rewrite] of seenReplacements) {
-    const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    out = out.replace(new RegExp(escaped, "gi"), rewrite);
-  }
-  return out;
+/**
+ * Extract signals (product name, indication, mechanism) from the raw copy
+ * so we can compose a genuinely new, grammatical compliant paragraph
+ * rather than doing brittle in-place phrase substitution.
+ */
+interface Signals {
+  product: string;
+  indication?: string;
+  mechanism?: string;
+  administration?: string;
 }
 
-function buildVariants(finalCopy: string, category: string): PlatformVariant[] {
-  const trimmed = finalCopy.trim().replace(/\s+/g, " ");
-  const first = trimmed.split(/(?<=[.!?])\s+/)[0] ?? trimmed;
-  const headline = first.length > 90 ? first.slice(0, 87).trimEnd() + "..." : first;
-  const shortDesc = trimmed.length > 150 ? trimmed.slice(0, 147).trimEnd() + "..." : trimmed;
+function extractSignals(original: string): Signals {
+  const cleaned = original.replace(/\s+/g, " ").trim();
+
+  // Product name: leading capitalized run (e.g. "OncoTarget-X"), or first noun-ish
+  // phrase before a verb / colon. Falls back to a generic subject.
+  let product = "This therapy";
+  const capRun = cleaned.match(/^[A-Z][A-Za-z0-9\-]+(?:\s+[A-Z][A-Za-z0-9\-]+)*/);
+  if (capRun && capRun[0].split(/\s+/).length <= 4 && capRun[0].length >= 3) {
+    product = capRun[0];
+  } else {
+    const prefix = cleaned.match(/^([A-Za-z][A-Za-z0-9\-\s]{2,40}?)(?=\s+(?:is|treats?|helps?|targets?|delivers?|provides?|supports?|for|with|in|—|-|:))/i);
+    if (prefix) product = prefix[1].trim().replace(/^./, (c) => c.toUpperCase());
+  }
+
+  // Indication: "for <phrase>" up to punctuation.
+  let indication: string | undefined;
+  const ind = cleaned.match(/\bfor\s+((?:[A-Za-z0-9+\-]+(?:\s+[A-Za-z0-9+\-]+){0,7}))(?=[.,;:]|$| and | with | that | which )/i);
+  if (ind) {
+    const raw = ind[1].trim();
+    // Strip flagged terms out of the extracted indication so it stays clean.
+    const stripped = raw
+      .replace(/\b(cure[sd]?|miracul(?:ous|ously)|miracle|100%\s+safe|completely\s+safe|totally\s+safe|perfectly\s+safe|safe|guarante(?:e|ed|es)|no\s+side\s+effects?|best|#\s*1|number\s+one|world'?s\s+best|leading|revolutionary|breakthrough|game[-\s]?changing|painless|instant(?:ly|aneous)?|natural(?:ly)?)\b/gi, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (stripped.length >= 3) indication = stripped;
+  }
+
+  // Mechanism: "with <phrase>" or "targets <phrase>".
+  let mechanism: string | undefined;
+  const mech = cleaned.match(/\b(?:targets?|blocks?|inhibits?|modulates?|activates?|delivers?)\s+([A-Za-z0-9+\-]+(?:\s+[A-Za-z0-9+\-]+){0,4})/i);
+  if (mech) mechanism = mech[1].trim();
+
+  // Administration: oral / IV / injection / infusion / topical.
+  let administration: string | undefined;
+  const admin = cleaned.match(/\b(oral|intravenous|IV|subcutaneous|injectable|infusion|topical|inhaled|implantable)\b/i);
+  if (admin) administration = admin[1].toLowerCase();
+
+  return { product, indication, mechanism, administration };
+}
+
+function audienceForCategory(category: string): { long: string; short: string; consultVerb: string } {
+  const c = category.toLowerCase();
+  if (c.includes("device")) return { long: "prescribing clinicians", short: "clinicians", consultVerb: "clinician" };
+  if (c.includes("aesthetic") || c.includes("dermatology")) return { long: "board-certified practitioners", short: "practitioners", consultVerb: "practitioner" };
+  if (c.includes("oncology")) return { long: "treating oncologists", short: "oncologists", consultVerb: "oncologist" };
+  if (c.includes("supplement") || c.includes("wellness")) return { long: "qualified healthcare providers", short: "providers", consultVerb: "healthcare provider" };
+  return { long: "prescribing physicians", short: "physicians", consultVerb: "physician" };
+}
+
+/**
+ * Compose a coherent, grammatical compliant paragraph from the extracted
+ * signals. Reads as human-written copy, not phrase substitution.
+ */
+function synthesizeCompliantCopy(original: string, category: string, hasFindings: boolean): string {
+  const { product, indication, mechanism, administration } = extractSignals(original);
+  const audience = audienceForCategory(category);
+  const categoryPhrase = category.toLowerCase();
+
+  const sentences: string[] = [];
+
+  // Sentence 1 — positioning.
+  if (indication) {
+    sentences.push(
+      `${product} is an evidence-based ${categoryPhrase} option clinically studied to support eligible adults with ${indication}.`
+    );
+  } else {
+    sentences.push(
+      `${product} is an evidence-based ${categoryPhrase} option supported by peer-reviewed clinical data.`
+    );
+  }
+
+  // Sentence 2 — mechanism / administration where available.
+  if (mechanism && administration) {
+    sentences.push(
+      `Its ${administration} formulation targets ${mechanism} and is prescribed alongside standard care.`
+    );
+  } else if (mechanism) {
+    sentences.push(
+      `It is designed to target ${mechanism} and is prescribed alongside standard care.`
+    );
+  } else if (administration) {
+    sentences.push(
+      `The ${administration} regimen is prescribed alongside standard care and monitored by the treating team.`
+    );
+  } else {
+    sentences.push(
+      `It is prescribed alongside standard care and monitored by the treating team.`
+    );
+  }
+
+  // Sentence 3 — fair balance / risk disclosure (always).
+  sentences.push(
+    `Individual response and tolerability vary; ${audience.long} should review the full prescribing information for the risk-benefit profile and contraindications.`
+  );
+
+  // Sentence 4 — audience gating + CTA.
+  sentences.push(
+    `Talk to your ${audience.consultVerb} about eligibility. For healthcare professionals.`
+  );
+
+  // Note if the input was empty — still return a template so the section is populated.
+  if (!original.trim() && !hasFindings) {
+    return sentences.join(" ");
+  }
+
+  return sentences.join(" ");
+}
+
+// Truncate to a hard character budget at a clean word boundary, no ellipsis
+// mid-word. If the string already fits, return as-is.
+function fitToLimit(text: string, limit: number): string {
+  const t = text.replace(/\s+/g, " ").trim();
+  if (t.length <= limit) return t;
+  const cut = t.slice(0, limit + 1);
+  const lastSpace = cut.lastIndexOf(" ");
+  const boundary = lastSpace > limit * 0.6 ? lastSpace : limit;
+  return t.slice(0, boundary).replace(/[\s,.;:—-]+$/, "").trim();
+}
+
+function buildVariants(original: string, category: string, hasFindings: boolean): PlatformVariant[] {
+  const { product, indication } = extractSignals(original);
+  const audience = audienceForCategory(category);
+  const shortProduct = product.length > 18 ? product.split(/\s+/)[0] : product;
+
+  // Instagram — up to 220 chars, single-line, no truncation needed because we
+  // build it from a template that stays inside the budget.
+  const instagram = fitToLimit(
+    indication
+      ? `${shortProduct}: an evidence-based option studied for ${indication}. Talk to your ${audience.consultVerb} about eligibility. For HCPs.`
+      : `${shortProduct}: an evidence-based ${category.toLowerCase()} option. Talk to your ${audience.consultVerb} about eligibility. For HCPs.`,
+    220
+  );
+
+  // LinkedIn — up to 400 chars, longer professional framing.
+  const linkedin = fitToLimit(
+    indication
+      ? `${shortProduct} — an evidence-based ${category.toLowerCase()} option clinically studied to support adults with ${indication}. Prescribed alongside standard care; ${audience.long} should review the full risk-benefit profile. Request the clinical dossier. For healthcare professionals.`
+      : `${shortProduct} — an evidence-based ${category.toLowerCase()} option supported by peer-reviewed clinical data. Prescribed alongside standard care; ${audience.long} should review the full risk-benefit profile. Request the clinical dossier. For healthcare professionals.`,
+    400
+  );
+
+  // Google Ads limits: Headline ≤ 30 chars, Description ≤ 90 chars.
+  const headline = fitToLimit(`${shortProduct} | Clinically Studied`, 30);
+  const description = fitToLimit(
+    indication
+      ? `Evidence-based option studied for ${indication}. For HCPs.`
+      : `Evidence-based ${category.toLowerCase()} option. Consult your ${audience.consultVerb}. For HCPs.`,
+    90
+  );
 
   return [
     {
       platform: "Instagram",
-      label: "Social Hook · Instagram",
-      content: `${headline} Talk to your ${category.toLowerCase().includes("device") ? "clinician" : "physician"} about eligibility. #ForHCPs`,
+      label: `Social Hook · Instagram (${instagram.length} chars)`,
+      content: instagram,
     },
     {
       platform: "LinkedIn",
-      label: "Professional Post · LinkedIn",
-      content: `${shortDesc} Designed with ${category} specialists — request the clinical dossier. For healthcare professionals.`,
+      label: `Professional Post · LinkedIn (${linkedin.length} chars)`,
+      content: linkedin,
     },
     {
       platform: "Google Ads",
-      label: "Google Ads · Headline + Description",
-      content: `Headline: ${headline.replace(/[.!?]+$/, "")}\nDescription: ${shortDesc} For healthcare professionals.`,
+      label: `Google Ads · Headline ≤30 + Description ≤90`,
+      content: `Headline (${headline.length}/30): ${headline}\nDescription (${description.length}/90): ${description}`,
     },
   ];
 }
