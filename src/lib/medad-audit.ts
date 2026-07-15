@@ -274,7 +274,7 @@ function audienceForCategory(category: string): { long: string; short: string; c
  * signals. Reads as human-written copy, not phrase substitution.
  */
 function synthesizeCompliantCopy(original: string, category: string, hasFindings: boolean): string {
-  const { product, indication, mechanism, administration } = extractSignals(original);
+  const { product, indication, mechanism, administration } = extractSignals(original, category);
   const audience = audienceForCategory(category);
   const categoryPhrase = category.toLowerCase();
 
