@@ -42,7 +42,7 @@ export default function MedAdComplianceAI() {
             MedAd Compliance AI — Speed of Generative AI + Regulatory Safety of a Senior Pharmacist
           </h1>
           <p className="mt-6 text-lg md:text-xl text-slate-300/90 max-w-3xl">
-            An intelligent, Gemini-powered alignment tool that automatically generates and audits medical ad copy to prevent legal hallucinations, FDA warnings, and EU EUDAMED compliance violations.
+            An intelligent, Gemini-powered alignment tool that automatically generates and audits medical ad copy to prevent legal hallucinations, FDA warnings, and EU MDR compliance violations.
           </p>
         </section>
 
