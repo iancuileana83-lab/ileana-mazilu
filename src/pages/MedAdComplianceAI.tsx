@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown, Download, XCircle, FileText, Repeat } from "lucide-react";
 import jsPDF from "jspdf";
-
-const AUDIT_ITEMS = [
-  { flag: "Removed absolute claim 'cures'", reason: "Prevents regulatory penalties under FDA Title 21 CFR §202.1(e)(6)", safe: "Replaced with: 'clinically studied to support'" },
-  { flag: "Removed superlative 'miraculous'", reason: "Violates FDA prohibition on unsubstantiated efficacy claims", safe: "Replaced with: 'evidence-based innovation'" },
-  { flag: "Removed unqualified 'safe'", reason: "EU MDR Art. 7 prohibits misleading safety claims without full risk disclosure", safe: "Replaced with: 'physician-prescribed treatment'" },
-  { flag: "Added HCP audience gating", reason: "MDCG 2022-14 requires professional-audience labeling for prescription therapies", safe: "Appended: 'For healthcare professionals.'" },
-];
+import { runAudit, severityColor, type AuditReport } from "@/lib/medad-audit";
 
 export default function MedAdComplianceAI() {
   const [loading, setLoading] = useState(false);
