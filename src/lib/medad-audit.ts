@@ -175,39 +175,84 @@ interface Signals {
   administration?: string;
 }
 
-function extractSignals(original: string): Signals {
+// Words that must never be treated as a product/brand name, even if the
+// input starts with them capitalized (e.g. "Our new treatment...").
+const NON_PRODUCT_STOPWORDS = new Set([
+  "our", "the", "a", "an", "this", "that", "these", "those", "new", "introducing",
+  "we", "you", "your", "it", "its", "here", "now", "today", "meet", "presenting",
+  "i", "my", "buy", "get", "try", "learn", "discover",
+]);
+
+// Words that are meaningless as an "indication" (patient population) and must
+// be discarded so we never produce "eligible adults with everyone".
+const INDICATION_STOPWORDS = new Set([
+  "everyone", "anyone", "everybody", "anybody", "all", "you", "us", "them",
+  "people", "patients", "adults", "kids", "children", "men", "women",
+  "your", "our", "the", "a", "an",
+]);
+
+function inferGenericProduct(cleaned: string, category: string): string {
+  // Try to lift a domain noun ("immunotherapy", "device", "supplement", ...)
+  // from the input; otherwise fall back to a category-appropriate generic.
+  const nounMatch = cleaned.match(
+    /\b(immunotherapy|chemotherapy|biologic|antibody|vaccine|therapy|treatment|device|implant|injection|supplement|serum|cream|regimen|protocol|solution|formula)\b/i
+  );
+  if (nounMatch) {
+    const noun = nounMatch[1].toLowerCase();
+    return `This ${noun}`;
+  }
+  const c = category.toLowerCase();
+  if (c.includes("device")) return "This device";
+  if (c.includes("aesthetic") || c.includes("dermatology")) return "This treatment";
+  if (c.includes("supplement") || c.includes("wellness")) return "This product";
+  return "This therapy";
+}
+
+function extractSignals(original: string, category: string): Signals {
   const cleaned = original.replace(/\s+/g, " ").trim();
 
-  // Product name: leading capitalized run (e.g. "OncoTarget-X"), or first noun-ish
-  // phrase before a verb / colon. Falls back to a generic subject.
-  let product = "This therapy";
+  // Product name: leading capitalized run — but reject if it's really a
+  // pronoun/determiner like "Our" or a marketing lead-in like "Introducing".
+  let product = "";
   const capRun = cleaned.match(/^[A-Z][A-Za-z0-9\-]+(?:\s+[A-Z][A-Za-z0-9\-]+)*/);
-  if (capRun && capRun[0].split(/\s+/).length <= 4 && capRun[0].length >= 3) {
-    product = capRun[0];
-  } else {
-    const prefix = cleaned.match(/^([A-Za-z][A-Za-z0-9\-\s]{2,40}?)(?=\s+(?:is|treats?|helps?|targets?|delivers?|provides?|supports?|for|with|in|—|-|:))/i);
-    if (prefix) product = prefix[1].trim().replace(/^./, (c) => c.toUpperCase());
+  if (capRun) {
+    const tokens = capRun[0].split(/\s+/);
+    const firstLower = tokens[0].toLowerCase();
+    const allStopwords = tokens.every((t) => NON_PRODUCT_STOPWORDS.has(t.toLowerCase()));
+    if (!allStopwords && !NON_PRODUCT_STOPWORDS.has(firstLower) && tokens.length <= 4 && capRun[0].length >= 3) {
+      product = capRun[0];
+    }
+  }
+  if (!product) {
+    product = inferGenericProduct(cleaned, category);
   }
 
-  // Indication: "for <phrase>" up to punctuation.
+  // Indication: "for <phrase>" up to punctuation, cleaned of flagged terms
+  // and vague population words.
   let indication: string | undefined;
   const ind = cleaned.match(/\bfor\s+((?:[A-Za-z0-9+\-]+(?:\s+[A-Za-z0-9+\-]+){0,7}))(?=[.,;:]|$| and | with | that | which )/i);
   if (ind) {
     const raw = ind[1].trim();
-    // Strip flagged terms out of the extracted indication so it stays clean.
     const stripped = raw
       .replace(/\b(cure[sd]?|miracul(?:ous|ously)|miracle|100%\s+safe|completely\s+safe|totally\s+safe|perfectly\s+safe|safe|guarante(?:e|ed|es)|no\s+side\s+effects?|best|#\s*1|number\s+one|world'?s\s+best|leading|revolutionary|breakthrough|game[-\s]?changing|painless|instant(?:ly|aneous)?|natural(?:ly)?)\b/gi, "")
       .replace(/\s+/g, " ")
       .trim();
-    if (stripped.length >= 3) indication = stripped;
+    // Reject the whole indication if the meaningful tokens are all stopwords
+    // ("everyone", "all", "you", ...). Otherwise, drop those tokens.
+    const meaningful = stripped
+      .split(/\s+/)
+      .filter((w) => !INDICATION_STOPWORDS.has(w.toLowerCase()))
+      .join(" ")
+      .trim();
+    if (meaningful.length >= 3) indication = meaningful;
   }
 
-  // Mechanism: "with <phrase>" or "targets <phrase>".
+  // Mechanism: "targets/blocks/... <phrase>".
   let mechanism: string | undefined;
   const mech = cleaned.match(/\b(?:targets?|blocks?|inhibits?|modulates?|activates?|delivers?)\s+([A-Za-z0-9+\-]+(?:\s+[A-Za-z0-9+\-]+){0,4})/i);
   if (mech) mechanism = mech[1].trim();
 
-  // Administration: oral / IV / injection / infusion / topical.
+  // Administration.
   let administration: string | undefined;
   const admin = cleaned.match(/\b(oral|intravenous|IV|subcutaneous|injectable|infusion|topical|inhaled|implantable)\b/i);
   if (admin) administration = admin[1].toLowerCase();
@@ -229,7 +274,7 @@ function audienceForCategory(category: string): { long: string; short: string; c
  * signals. Reads as human-written copy, not phrase substitution.
  */
 function synthesizeCompliantCopy(original: string, category: string, hasFindings: boolean): string {
-  const { product, indication, mechanism, administration } = extractSignals(original);
+  const { product, indication, mechanism, administration } = extractSignals(original, category);
   const audience = audienceForCategory(category);
   const categoryPhrase = category.toLowerCase();
 
@@ -295,7 +340,7 @@ function fitToLimit(text: string, limit: number): string {
 }
 
 function buildVariants(original: string, category: string, hasFindings: boolean): PlatformVariant[] {
-  const { product, indication } = extractSignals(original);
+  const { product, indication } = extractSignals(original, category);
   const audience = audienceForCategory(category);
   const shortProduct = product.length > 18 ? product.split(/\s+/)[0] : product;
 
