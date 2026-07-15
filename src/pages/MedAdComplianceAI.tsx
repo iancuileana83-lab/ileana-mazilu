@@ -5,12 +5,11 @@ import { runAudit, severityColor, type AuditReport } from "@/lib/medad-audit";
 
 export default function MedAdComplianceAI() {
   const [loading, setLoading] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  const [activeTab, setActiveTab] = useState<"outputs" | "audit">("outputs");
+  const [activeTab, setActiveTab] = useState<"outputs" | "audit" | "checklist">("outputs");
   const [category, setCategory] = useState("Oncology");
   const [description, setDescription] = useState("");
   const [frameworks, setFrameworks] = useState<string[]>(["FDA Advertising Guidelines"]);
-  const [auditedAt, setAuditedAt] = useState<Date | null>(null);
+  const [report, setReport] = useState<AuditReport | null>(null);
 
   const toggleFramework = (f: string) => {
     setFrameworks((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
@@ -18,11 +17,12 @@ export default function MedAdComplianceAI() {
 
   const handleGenerate = () => {
     setLoading(true);
-    setShowResults(false);
+    setReport(null);
     setTimeout(() => {
+      const r = runAudit({ description, category, frameworks });
+      setReport(r);
+      setActiveTab("outputs");
       setLoading(false);
-      setShowResults(true);
-      setAuditedAt(new Date());
     }, 2200);
   };
 
