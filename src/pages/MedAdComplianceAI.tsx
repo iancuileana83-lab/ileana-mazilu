@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown } from "lucide-react";
+import { Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown, Download, XCircle, FileText, Repeat } from "lucide-react";
+import jsPDF from "jspdf";
 
 export default function MedAdComplianceAI() {
   const [loading, setLoading] = useState(false);
