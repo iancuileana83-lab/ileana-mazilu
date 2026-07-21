@@ -74,6 +74,29 @@ export default function MedAdComplianceAI() {
     setFrameworks((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
   };
 
+  const submitConsultation = (e: React.FormEvent) => {
+    e.preventDefault();
+    setConsultError(null);
+    if (!consultName.trim() || !consultEmail.trim() || !consultMessage.trim()) {
+      setConsultError("Please fill in all fields before submitting.");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(consultEmail.trim())) {
+      setConsultError("Please enter a valid email address.");
+      return;
+    }
+    const subject = encodeURIComponent("Agency Premium — Priority Email Consultation Request");
+    const body = encodeURIComponent(
+      `Name: ${consultName.trim()}\nEmail: ${consultEmail.trim()}\n\nMessage:\n${consultMessage.trim()}`
+    );
+    window.location.href = `mailto:maziluileana88@gmail.com?subject=${subject}&body=${body}`;
+    setConsultOpen(false);
+    setConsultName("");
+    setConsultEmail("");
+    setConsultMessage("");
+  };
+
   const handleGenerate = () => {
     setLoading(true);
     setReport(null);
