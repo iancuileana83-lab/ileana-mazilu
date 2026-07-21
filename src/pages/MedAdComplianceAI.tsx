@@ -63,6 +63,13 @@ export default function MedAdComplianceAI() {
     cerReference: "",
   });
 
+  // Consultation request modal state
+  const [consultOpen, setConsultOpen] = useState(false);
+  const [consultName, setConsultName] = useState("");
+  const [consultEmail, setConsultEmail] = useState("");
+  const [consultMessage, setConsultMessage] = useState("");
+  const [consultError, setConsultError] = useState<string | null>(null);
+
   const toggleFramework = (f: string) => {
     setFrameworks((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
   };
