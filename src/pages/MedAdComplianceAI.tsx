@@ -386,7 +386,7 @@ export default function MedAdComplianceAI() {
             <Sparkles className="w-3.5 h-3.5" /> Gemini-Powered · Regulatory Grade
           </div>
           <h1 className="font-display text-4xl md:text-6xl leading-[1.05] font-semibold bg-gradient-to-br from-white via-cyan-100 to-purple-200 bg-clip-text text-transparent">
-            MedAd Compliance AI — Speed of Generative AI + Regulatory Safety of a Senior Pharmacist
+            MedAd Compliance AI — Speed of Generative AI + Regulatory Safety of a Senior Medical Writer
           </h1>
           <p className="mt-6 text-lg md:text-xl text-slate-300/90 max-w-3xl">
             An intelligent, Gemini-powered alignment tool that automatically generates and audits medical ad copy to prevent legal hallucinations, FDA warnings, and EU MDR compliance violations.
@@ -455,7 +455,7 @@ export default function MedAdComplianceAI() {
             {[
               { icon: Zap, color: "cyan", title: "Zero-Effort Prompt Engineering", desc: "Generic AI requires writing massive, complex prompt instructions and manually copy-pasting hundreds of pages of FDA/EU regulations. MedAd AI embeds these deep legal guardrails natively in the background. One click, instant compliance." },
               { icon: Shield, color: "purple", title: "The Legal Shield (Compliance Audit)", desc: "ChatGPT just outputs text without explaining why. MedAd AI acts as a digital lawyer, generating a transparent, step-by-step audit report that highlights banned words, cites the specific medical regulations violated, and provides safe alternatives." },
-              { icon: Brain, color: "cyan", title: "Human-in-the-Loop Pharmacist Expertise", desc: "Generic LLMs frequently suffer from medical hallucinations that lead to catastrophic legal fines. This platform's safety frameworks are designed, trained, and verified using specialized RLHF principles by a Licensed Senior Pharmacist." },
+              { icon: Brain, color: "cyan", title: "Human-in-the-Loop Medical Writing Expertise", desc: "Generic LLMs frequently suffer from medical hallucinations that lead to catastrophic legal fines. This platform's safety frameworks are designed, trained, and verified using specialized RLHF principles by a Senior Clinical Evaluation Medical Writer with 20+ years of pharmaceutical experience." },
             ].map((card) => (
               <div key={card.title} className="group relative rounded-2xl p-[1px] bg-gradient-to-br from-cyan-500/40 via-purple-500/20 to-transparent">
                 <div className="rounded-2xl h-full bg-[#0a0d1e]/90 backdrop-blur p-7 border border-white/5">
@@ -854,7 +854,7 @@ export default function MedAdComplianceAI() {
                   <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />250 Advanced Ad Audit Generations per month</li>
                   <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />White-Label PDF Export (Add your own agency logo to reports)</li>
                   <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />Deep Anti-Hallucination Filtering (Powered by Gemini Enterprise)</li>
-                  <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />Priority Pharmacist consultation fallback for complex clinical studies</li>
+                  <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />Priority senior medical-writer consultation fallback for complex clinical studies</li>
                 </ul>
                 <a
                   href="https://buy.stripe.com/aFa3cuesG49vedW7YS1wY01"
