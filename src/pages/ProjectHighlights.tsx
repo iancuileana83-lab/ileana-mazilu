@@ -105,7 +105,7 @@ export default function ProjectHighlights() {
       {/* ---- Pharma Synergy Article ---- */}
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">5.4 Perspective</p>
+          <p className="report-label">5.3 Perspective</p>
           <h2 className="report-title font-display text-xl">The Synergy Between Pharmaceutical Expertise and Medical Device Safety</h2>
         </div>
         <div className="space-y-4 text-sm text-foreground/85 leading-relaxed font-body max-w-3xl">
