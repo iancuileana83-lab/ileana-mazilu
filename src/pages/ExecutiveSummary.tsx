@@ -123,6 +123,30 @@ export default function ExecutiveSummary() {
         </ul>
       </div>
 
+      {/* Certifications & Credentials */}
+      <div className="report-section">
+        <div className="report-header">
+          <p className="report-label">1.2 Certifications & Credentials</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {credentials.map((credential) => (
+            <Card key={credential.title} className="border-primary/10 hover:border-primary/30 transition-colors">
+              <CardContent className="pt-6 flex gap-4">
+                <div className="w-12 h-12 rounded-lg bg-accent flex items-center justify-center flex-shrink-0">
+                  <credential.icon className="w-6 h-6 text-primary" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-display text-lg font-semibold text-foreground">{credential.title}</h3>
+                  <p className="text-sm text-primary font-medium font-body">{credential.institution}</p>
+                  <p className="text-xs text-muted-foreground font-body">{credential.year}</p>
+                  <p className="text-sm text-muted-foreground font-body leading-relaxed pt-1">{credential.description}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
       {/* Technical Portfolio & Evidence */}
       <div className="report-section">
         <div className="report-header">
