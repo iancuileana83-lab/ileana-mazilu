@@ -1,7 +1,16 @@
 import { useState } from "react";
-import { Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown, Download, XCircle, FileText, Repeat } from "lucide-react";
+import { Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown, Download, XCircle, FileText, Repeat, ClipboardCheck, Stethoscope } from "lucide-react";
 import jsPDF from "jspdf";
 import { runAudit, severityColor, type AuditReport } from "@/lib/medad-audit";
+import {
+  generateCer,
+  generatePmcf,
+  type CerInputs,
+  type PmcfInputs,
+  type GeneratedDocument,
+  type DeviceClass,
+  type EvaluationRoute,
+} from "@/lib/cer-pmcf-generator";
 
 export default function MedAdComplianceAI() {
   const [loading, setLoading] = useState(false);
@@ -10,6 +19,39 @@ export default function MedAdComplianceAI() {
   const [description, setDescription] = useState("");
   const [frameworks, setFrameworks] = useState<string[]>(["FDA Advertising Guidelines"]);
   const [report, setReport] = useState<AuditReport | null>(null);
+
+  // Long-form CER / PMCF regulatory-doc generator state
+  const [docMode, setDocMode] = useState<"CER" | "PMCF">("CER");
+  const [docLoading, setDocLoading] = useState(false);
+  const [generatedDoc, setGeneratedDoc] = useState<GeneratedDocument | null>(null);
+  const [activeDocSection, setActiveDocSection] = useState<number>(0);
+
+  const [cerInputs, setCerInputs] = useState<CerInputs>({
+    deviceName: "",
+    manufacturer: "",
+    classification: "IIb",
+    intendedPurpose: "",
+    therapeuticArea: "Oncology",
+    patientPopulation: "adult patients meeting the CE-marked indication",
+    technicalCharacteristics: "",
+    evaluationRoute: "equivalence",
+    equivalentDevice: "",
+    knownRisks: "",
+    evaluatorName: "Ileana Mazilu",
+    evaluatorCredentials: "",
+  });
+
+  const [pmcfInputs, setPmcfInputs] = useState<PmcfInputs>({
+    deviceName: "",
+    manufacturer: "",
+    classification: "IIb",
+    intendedPurpose: "",
+    therapeuticArea: "Oncology",
+    patientPopulation: "adult patients meeting the CE-marked indication",
+    pmcfMethod: "prospective-registry",
+    pmcfDurationMonths: 24,
+    cerReference: "",
+  });
 
   const toggleFramework = (f: string) => {
     setFrameworks((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
@@ -212,6 +254,119 @@ export default function MedAdComplianceAI() {
     }
 
     doc.save(`MedAd-Compliance-Audit-${Date.now()}.pdf`);
+  };
+
+  // ---- Long-form regulatory document generation ----
+  const handleGenerateDoc = () => {
+    setDocLoading(true);
+    setGeneratedDoc(null);
+    setTimeout(() => {
+      const d = docMode === "CER" ? generateCer(cerInputs) : generatePmcf(pmcfInputs);
+      setGeneratedDoc(d);
+      setActiveDocSection(0);
+      setDocLoading(false);
+    }, 1800);
+  };
+
+  const downloadDocPDF = () => {
+    if (!generatedDoc) return;
+    const doc = new jsPDF({ unit: "pt", format: "letter" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 54;
+    const maxWidth = pageWidth - margin * 2;
+    let y = margin;
+
+    const ensureSpace = (needed: number) => {
+      if (y + needed > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+    };
+    const writeParagraph = (text: string, size = 10, color: [number, number, number] = [30, 41, 59]) => {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(size);
+      doc.setTextColor(...color);
+      const lines = doc.splitTextToSize(text, maxWidth);
+      lines.forEach((line: string) => {
+        ensureSpace(size + 4);
+        doc.text(line, margin, y);
+        y += size + 4;
+      });
+    };
+
+    // Cover header bar
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, pageWidth, 90, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text(generatedDoc.title, margin, 38, { maxWidth: maxWidth });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(180, 200, 220);
+    doc.text(generatedDoc.subtitle, margin, 62, { maxWidth: maxWidth });
+    doc.text(`Generated ${generatedDoc.generatedAt.toLocaleString()}`, margin, 78);
+    y = 120;
+
+    // Metadata block
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.setTextColor(30, 41, 59);
+    doc.text("Document Metadata", margin, y);
+    y += 6;
+    doc.setDrawColor(200);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 16;
+    generatedDoc.meta.forEach(([k, v]) => {
+      ensureSpace(18);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(30, 41, 59);
+      doc.text(k, margin, y);
+      doc.setFont("helvetica", "normal");
+      const lines = doc.splitTextToSize(v, maxWidth - 150);
+      doc.text(lines, margin + 150, y);
+      y += 14 * lines.length + 2;
+    });
+
+    y += 8;
+
+    // Sections
+    generatedDoc.sections.forEach((s) => {
+      ensureSpace(40);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.setTextColor(30, 41, 59);
+      doc.text(`${s.number}. ${s.title}`, margin, y);
+      y += 6;
+      doc.setDrawColor(180);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 14;
+      s.paragraphs.forEach((p) => {
+        writeParagraph(p);
+        y += 4;
+      });
+      y += 8;
+    });
+
+    // Footer
+    const pages = doc.getNumberOfPages();
+    for (let p = 1; p <= pages; p++) {
+      doc.setPage(p);
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(8);
+      doc.setTextColor(120);
+      doc.text(
+        `${generatedDoc.type} generated by MedAd Compliance AI — Ileana Mazilu, Senior Medical Writer. Automated draft; final regulatory sign-off requires human expert validation.`,
+        margin,
+        pageHeight - 30,
+        { maxWidth }
+      );
+      doc.text(`Page ${p} of ${pages}`, pageWidth - margin, pageHeight - 30, { align: "right" });
+    }
+
+    doc.save(`${generatedDoc.type}-${generatedDoc.title.replace(/[^A-Za-z0-9]+/g, "-")}-${Date.now()}.pdf`);
   };
 
 
@@ -507,6 +662,138 @@ export default function MedAdComplianceAI() {
         </section>
 
 
+        {/* LONG-FORM REGULATORY DOC GENERATOR (CER / PMCF) */}
+        <section className="relative px-6 md:px-12 py-16 max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-xs uppercase tracking-[0.3em] text-purple-300/80 mb-3">Regulatory Documentation Engine</p>
+            <h2 className="font-display text-3xl md:text-4xl font-semibold text-white">
+              Long-Form <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-300">CER & PMCF</span> Generator
+            </h2>
+            <p className="mt-4 text-slate-400 max-w-3xl mx-auto">
+              Generate structured, MDR 2017/745-aligned draft documentation — a 10-section Clinical Evaluation Report or a 5-section Post-Market Clinical Follow-Up plan — from a compact device profile. Every section is populated with substantive, audit-ready content and exported as a formatted PDF.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-8 md:p-10 backdrop-blur">
+            {/* Mode switch */}
+            <div className="flex gap-3 mb-8">
+              {(["CER", "PMCF"] as const).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => { setDocMode(m); setGeneratedDoc(null); }}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-semibold transition ${docMode === m ? "border-cyan-400/60 bg-cyan-400/10 text-cyan-200" : "border-white/10 bg-[#0a0d1e] text-slate-400 hover:text-white"}`}
+                >
+                  {m === "CER" ? <ClipboardCheck className="w-4 h-4" /> : <Stethoscope className="w-4 h-4" />}
+                  {m === "CER" ? "Clinical Evaluation Report (10 sections)" : "PMCF Plan (5 sections)"}
+                </button>
+              ))}
+            </div>
+
+            {docMode === "CER" ? (
+              <div className="grid md:grid-cols-2 gap-5">
+                <FieldInput label="Device name" value={cerInputs.deviceName} onChange={(v) => setCerInputs({ ...cerInputs, deviceName: v })} placeholder="e.g. OncoPort IV Access System" />
+                <FieldInput label="Manufacturer / Legal manufacturer" value={cerInputs.manufacturer} onChange={(v) => setCerInputs({ ...cerInputs, manufacturer: v })} placeholder="e.g. MedDevice EU S.A." />
+                <FieldSelect label="MDR classification" value={cerInputs.classification} onChange={(v) => setCerInputs({ ...cerInputs, classification: v as DeviceClass })} options={["I", "IIa", "IIb", "III"]} />
+                <FieldInput label="Therapeutic area" value={cerInputs.therapeuticArea} onChange={(v) => setCerInputs({ ...cerInputs, therapeuticArea: v })} placeholder="e.g. Oncology, Cardiology" />
+                <FieldTextarea className="md:col-span-2" label="Intended purpose (verbatim from IFU)" value={cerInputs.intendedPurpose} onChange={(v) => setCerInputs({ ...cerInputs, intendedPurpose: v })} placeholder="e.g. Long-term central venous access for the administration of chemotherapy in adult oncology patients." />
+                <FieldInput label="Target patient population" value={cerInputs.patientPopulation} onChange={(v) => setCerInputs({ ...cerInputs, patientPopulation: v })} placeholder="e.g. adult oncology patients requiring long-term IV chemotherapy" />
+                <FieldSelect label="Evaluation route" value={cerInputs.evaluationRoute} onChange={(v) => setCerInputs({ ...cerInputs, evaluationRoute: v as EvaluationRoute })} options={[["equivalence", "Equivalence"], ["clinical-investigation", "Clinical investigation"], ["hybrid", "Hybrid"]]} />
+                <FieldTextarea className="md:col-span-2" label="Technical characteristics, materials, mechanism of action" value={cerInputs.technicalCharacteristics} onChange={(v) => setCerInputs({ ...cerInputs, technicalCharacteristics: v })} placeholder="Titanium port body, silicone septum, polyurethane catheter. Subcutaneous implantation with catheter tip at cavoatrial junction. Passive access via non-coring needle..." />
+                {(cerInputs.evaluationRoute === "equivalence" || cerInputs.evaluationRoute === "hybrid") && (
+                  <FieldInput className="md:col-span-2" label="Equivalent (predicate) device" value={cerInputs.equivalentDevice || ""} onChange={(v) => setCerInputs({ ...cerInputs, equivalentDevice: v })} placeholder="e.g. PowerPort ClearVUE (Bard Access Systems)" />
+                )}
+                <FieldTextarea className="md:col-span-2" label="Known residual risks (optional)" value={cerInputs.knownRisks || ""} onChange={(v) => setCerInputs({ ...cerInputs, knownRisks: v })} placeholder="e.g. catheter-related thrombosis, infection, extravasation, mechanical failure" />
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-5">
+                <FieldInput label="Device name" value={pmcfInputs.deviceName} onChange={(v) => setPmcfInputs({ ...pmcfInputs, deviceName: v })} placeholder="e.g. OncoPort IV Access System" />
+                <FieldInput label="Manufacturer" value={pmcfInputs.manufacturer} onChange={(v) => setPmcfInputs({ ...pmcfInputs, manufacturer: v })} placeholder="e.g. MedDevice EU S.A." />
+                <FieldSelect label="MDR classification" value={pmcfInputs.classification} onChange={(v) => setPmcfInputs({ ...pmcfInputs, classification: v as DeviceClass })} options={["I", "IIa", "IIb", "III"]} />
+                <FieldInput label="Therapeutic area" value={pmcfInputs.therapeuticArea} onChange={(v) => setPmcfInputs({ ...pmcfInputs, therapeuticArea: v })} />
+                <FieldTextarea className="md:col-span-2" label="Intended purpose" value={pmcfInputs.intendedPurpose} onChange={(v) => setPmcfInputs({ ...pmcfInputs, intendedPurpose: v })} />
+                <FieldInput label="Target patient population" value={pmcfInputs.patientPopulation} onChange={(v) => setPmcfInputs({ ...pmcfInputs, patientPopulation: v })} />
+                <FieldSelect label="PMCF method" value={pmcfInputs.pmcfMethod} onChange={(v) => setPmcfInputs({ ...pmcfInputs, pmcfMethod: v as PmcfInputs["pmcfMethod"] })} options={[["prospective-registry", "Prospective registry"], ["survey", "HCP / patient survey"], ["literature-surveillance", "Literature surveillance"], ["post-market-study", "Post-market study"], ["mixed", "Mixed-method"]]} />
+                <FieldInput label="Duration (months)" type="number" value={String(pmcfInputs.pmcfDurationMonths)} onChange={(v) => setPmcfInputs({ ...pmcfInputs, pmcfDurationMonths: Math.max(3, parseInt(v) || 24) })} />
+                <FieldInput className="md:col-span-2" label="Linked CER reference (optional)" value={pmcfInputs.cerReference || ""} onChange={(v) => setPmcfInputs({ ...pmcfInputs, cerReference: v })} placeholder="e.g. CER-OncoPort-v3.2 dated 2026-04-15" />
+              </div>
+            )}
+
+            <button
+              onClick={handleGenerateDoc}
+              disabled={docLoading || (docMode === "CER" ? !cerInputs.deviceName || !cerInputs.intendedPurpose : !pmcfInputs.deviceName || !pmcfInputs.intendedPurpose)}
+              className="mt-8 w-full relative overflow-hidden rounded-xl py-4 px-6 font-semibold text-white bg-gradient-to-r from-purple-500 via-cyan-400 to-cyan-500 hover:from-purple-400 hover:to-cyan-400 transition shadow-[0_0_40px_-10px_rgba(168,85,247,0.6)] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {docLoading ? (
+                <span className="flex items-center justify-center gap-3">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Composing MDR-aligned {docMode} draft…
+                </span>
+              ) : (
+                `Generate Structured ${docMode} Draft`
+              )}
+            </button>
+          </div>
+
+          {/* Generated document viewer */}
+          {generatedDoc && (
+            <div className="mt-10 rounded-3xl border border-white/10 bg-[#0a0d1e]/70 overflow-hidden animate-fade-in">
+              <div className="p-6 md:p-8 border-b border-white/10 bg-gradient-to-r from-purple-500/[0.08] to-cyan-500/[0.05]">
+                <p className="text-xs uppercase tracking-[0.3em] text-cyan-300 mb-2">{generatedDoc.type} · Draft</p>
+                <h3 className="font-display text-2xl md:text-3xl text-white">{generatedDoc.title}</h3>
+                <p className="text-sm text-slate-400 mt-1">{generatedDoc.subtitle}</p>
+              </div>
+
+              <div className="grid md:grid-cols-[260px_1fr]">
+                {/* Section nav */}
+                <aside className="border-b md:border-b-0 md:border-r border-white/10 bg-[#05060f]/60 p-3 max-h-[560px] overflow-y-auto">
+                  {generatedDoc.sections.map((s, idx) => (
+                    <button
+                      key={s.number}
+                      onClick={() => setActiveDocSection(idx)}
+                      className={`w-full text-left px-3 py-2.5 rounded-lg mb-1 text-sm transition ${activeDocSection === idx ? "bg-cyan-400/10 text-cyan-200 border border-cyan-400/30" : "text-slate-400 hover:text-white hover:bg-white/[0.03] border border-transparent"}`}
+                    >
+                      <span className="text-[10px] uppercase tracking-widest text-slate-500 mr-2">§{s.number}</span>
+                      {s.title}
+                    </button>
+                  ))}
+                </aside>
+
+                {/* Section content */}
+                <div className="p-6 md:p-10 max-h-[560px] overflow-y-auto">
+                  {(() => {
+                    const s = generatedDoc.sections[activeDocSection];
+                    return (
+                      <>
+                        <p className="text-xs uppercase tracking-[0.3em] text-purple-300 mb-2">Section {s.number}</p>
+                        <h4 className="font-display text-2xl text-white mb-6">{s.title}</h4>
+                        <div className="space-y-5 text-slate-300 text-[15px] leading-relaxed">
+                          {s.paragraphs.map((p, i) => (
+                            <p key={i} className="whitespace-pre-wrap">{p}</p>
+                          ))}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-white/10 bg-[#05060f]/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="text-xs text-slate-400">
+                  {generatedDoc.sections.length} sections generated · {generatedDoc.generatedAt.toLocaleString()}
+                </div>
+                <button
+                  onClick={downloadDocPDF}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-400 hover:to-cyan-400 text-white font-semibold text-sm shadow-[0_0_30px_-10px_rgba(168,85,247,0.6)] transition"
+                >
+                  <Download className="w-4 h-4" />
+                  Download Full {generatedDoc.type} as PDF
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+
+
         {/* CTA */}
         <section className="relative px-6 md:px-12 py-16 max-w-5xl mx-auto">
           <div className="rounded-3xl p-[1px] bg-gradient-to-r from-cyan-500 via-purple-500 to-cyan-500">
@@ -585,3 +872,69 @@ export default function MedAdComplianceAI() {
     </div>
   );
 }
+
+// -- Reusable input components for the CER / PMCF console --
+interface FieldBaseProps {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  className?: string;
+}
+
+function FieldInput({ label, value, onChange, placeholder, className = "", type = "text" }: FieldBaseProps & { type?: string }) {
+  return (
+    <div className={className}>
+      <label className="text-xs uppercase tracking-widest text-slate-400 mb-2 block">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full bg-[#0a0d1e] border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-slate-600 text-sm focus:border-cyan-400/60 focus:outline-none"
+      />
+    </div>
+  );
+}
+
+function FieldTextarea({ label, value, onChange, placeholder, className = "" }: FieldBaseProps) {
+  return (
+    <div className={className}>
+      <label className="text-xs uppercase tracking-widest text-slate-400 mb-2 block">{label}</label>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={3}
+        className="w-full bg-[#0a0d1e] border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-slate-600 text-sm focus:border-cyan-400/60 focus:outline-none resize-none"
+      />
+    </div>
+  );
+}
+
+interface FieldSelectProps {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: (string | [string, string])[];
+  className?: string;
+}
+
+function FieldSelect({ label, value, onChange, options, className = "" }: FieldSelectProps) {
+  return (
+    <div className={className}>
+      <label className="text-xs uppercase tracking-widest text-slate-400 mb-2 block">{label}</label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-[#0a0d1e] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-cyan-400/60 focus:outline-none"
+      >
+        {options.map((opt) => {
+          const [v, l] = Array.isArray(opt) ? opt : [opt, opt];
+          return <option key={v} value={v}>{l}</option>;
+        })}
+      </select>
+    </div>
+  );
+}
+
