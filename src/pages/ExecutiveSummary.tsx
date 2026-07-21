@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import professionalPhoto from "@/assets/professional-photo.jpg";
 import { Badge } from "@/components/ui/badge";
-import { FileDown, Mail, Phone, Linkedin, CheckCircle, FlaskConical, Search, LayoutGrid, Download, Sparkles, ArrowRight } from "lucide-react";
+import { FileDown, Mail, Phone, Linkedin, CheckCircle, FlaskConical, Search, LayoutGrid, Download, Sparkles, ArrowRight, GraduationCap, Award, Quote } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -20,6 +20,23 @@ const highlights = [
   "Developed systematic literature review protocols aligned with MEDDEV 2.7/1 Rev. 4 guidelines",
   "Expert contributor to pharmacovigilance safety reports (PSURs) for multinational pharma sponsors",
   "Designed standardized CER templates adopted by three Fortune 500 medtech organizations",
+];
+
+const credentials = [
+  {
+    title: "Pharmacy Degree",
+    institution: "Carol Davila University of Medicine and Pharmacy",
+    year: "2005",
+    icon: GraduationCap,
+    description: "Foundational training in pharmacology, clinical safety, and pharmaceutical sciences.",
+  },
+  {
+    title: "Engineering Degree",
+    institution: "USAMV",
+    year: "2012",
+    icon: Award,
+    description: "Technical and analytical foundation supporting medical device evaluation and regulatory systems.",
+  },
 ];
 
 export default function ExecutiveSummary() {
@@ -106,10 +123,34 @@ export default function ExecutiveSummary() {
         </ul>
       </div>
 
+      {/* Certifications & Credentials */}
+      <div className="report-section">
+        <div className="report-header">
+          <p className="report-label">1.2 Certifications & Credentials</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {credentials.map((credential) => (
+            <Card key={credential.title} className="border-primary/10 hover:border-primary/30 transition-colors">
+              <CardContent className="pt-6 flex gap-4">
+                <div className="w-12 h-12 rounded-lg bg-accent flex items-center justify-center flex-shrink-0">
+                  <credential.icon className="w-6 h-6 text-primary" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-display text-lg font-semibold text-foreground">{credential.title}</h3>
+                  <p className="text-sm text-primary font-medium font-body">{credential.institution}</p>
+                  <p className="text-xs text-muted-foreground font-body">{credential.year}</p>
+                  <p className="text-sm text-muted-foreground font-body leading-relaxed pt-1">{credential.description}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
       {/* Technical Portfolio & Evidence */}
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">1.2 Technical Portfolio & Evidence</p>
+          <p className="report-label">1.3 Technical Portfolio & Evidence</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -233,7 +274,7 @@ export default function ExecutiveSummary() {
       </div>
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">1.3 Contact & Resources</p>
+          <p className="report-label">1.4 Contact & Resources</p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-8">
@@ -274,6 +315,19 @@ export default function ExecutiveSummary() {
               </Badge>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Client Testimonials */}
+      <div className="report-section">
+        <div className="report-header">
+          <p className="report-label">1.5 Client Testimonials</p>
+        </div>
+        <div className="bg-muted/40 rounded-lg border border-dashed border-border p-8 text-center">
+          <Quote className="w-8 h-8 text-primary/40 mx-auto mb-4" />
+          <p className="text-sm text-muted-foreground font-body italic leading-relaxed max-w-xl mx-auto">
+            Testimonials coming soon as we onboard our first clients. This section will be updated with verified feedback from regulatory, medtech, and pharmaceutical partners.
+          </p>
         </div>
       </div>
 
