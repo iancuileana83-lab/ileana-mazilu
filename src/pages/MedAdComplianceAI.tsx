@@ -119,7 +119,26 @@ export default function MedAdComplianceAI() {
     doc.setFontSize(10);
     doc.setTextColor(180, 200, 220);
     doc.text("Regulatory Audit Report", margin, 50);
-    y = 100;
+    y = 90;
+
+    // Prominent draft disclaimer banner
+    doc.setFillColor(254, 243, 199);
+    doc.rect(margin, y, maxWidth, 40, "F");
+    doc.setDrawColor(217, 119, 6);
+    doc.rect(margin, y, maxWidth, 40);
+    doc.setTextColor(120, 53, 15);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("AI-GENERATED DRAFT — REQUIRES HUMAN EXPERT REVIEW", margin + 10, y + 15);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(
+      "Ad copy, rewrites and audit findings are AI-generated drafts. Review with a qualified medical writer and legal counsel before publication. No guaranteed FDA / EU MDR compliance outcome is implied.",
+      margin + 10,
+      y + 28,
+      { maxWidth: maxWidth - 20 }
+    );
+    y += 56;
 
     // Metadata
     drawSectionHeader("Audit Metadata");
@@ -308,6 +327,25 @@ export default function MedAdComplianceAI() {
     doc.text(generatedDoc.subtitle, margin, 62, { maxWidth: maxWidth });
     doc.text(`Generated ${generatedDoc.generatedAt.toLocaleString()}`, margin, 78);
     y = 120;
+
+    // Prominent draft disclaimer banner
+    doc.setFillColor(254, 243, 199);
+    doc.rect(margin, y, maxWidth, 44, "F");
+    doc.setDrawColor(217, 119, 6);
+    doc.rect(margin, y, maxWidth, 44);
+    doc.setTextColor(120, 53, 15);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("AI-GENERATED DRAFT — REQUIRES HUMAN EXPERT REVIEW", margin + 10, y + 16);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(
+      "This document is an AI-assisted draft. It must be reviewed, verified and formally accepted by a qualified medical writer and the manufacturer's PRRC before regulatory use. No guaranteed EU MDR / FDA compliance outcome is implied.",
+      margin + 10,
+      y + 30,
+      { maxWidth: maxWidth - 20 }
+    );
+    y += 60;
 
     // Metadata block
     doc.setFont("helvetica", "bold");
@@ -541,6 +579,10 @@ export default function MedAdComplianceAI() {
           {/* RESULTS */}
           {report && (
             <div className="mt-10 rounded-3xl border border-white/10 bg-[#0a0d1e]/70 overflow-hidden animate-fade-in">
+              <div className="px-6 py-3 bg-amber-500/10 border-b border-amber-400/30 text-amber-200 text-xs flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span><span className="font-semibold">AI-generated draft.</span> Requires human expert review and validation before publication or regulatory use. No guaranteed FDA/EU MDR compliance outcome is implied.</span>
+              </div>
               {/* Executive summary strip */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5">
                 {[
@@ -737,6 +779,10 @@ export default function MedAdComplianceAI() {
           {/* Generated document viewer */}
           {generatedDoc && (
             <div className="mt-10 rounded-3xl border border-white/10 bg-[#0a0d1e]/70 overflow-hidden animate-fade-in">
+              <div className="px-6 py-3 bg-amber-500/10 border-b border-amber-400/30 text-amber-200 text-xs flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span><span className="font-semibold">AI-generated draft.</span> This {generatedDoc.type} is an AI-assisted draft and requires human expert review, factual verification, and PRRC sign-off before use in a regulatory submission. No guaranteed EU MDR compliance outcome is implied.</span>
+              </div>
               <div className="p-6 md:p-8 border-b border-white/10 bg-gradient-to-r from-purple-500/[0.08] to-cyan-500/[0.05]">
                 <p className="text-xs uppercase tracking-[0.3em] text-cyan-300 mb-2">{generatedDoc.type} · Draft</p>
                 <h3 className="font-display text-2xl md:text-3xl text-white">{generatedDoc.title}</h3>
@@ -814,22 +860,30 @@ export default function MedAdComplianceAI() {
 
         {/* PRICING */}
         <section className="relative px-6 md:px-12 py-20 max-w-6xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-6">
             <h2 className="font-display text-3xl md:text-4xl font-semibold text-white mb-4">Protect Your Brand. Priced for Peace of Mind.</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">A single medical ad violation costs a minimum €5,000 fine. Protect your brand for the price of a dinner. Credits reset automatically every 30 days.</p>
+            <p className="text-slate-400 max-w-2xl mx-auto">Non-compliant medical advertising can result in significant regulatory fines and reputational damage. Credits reset automatically every 30 days.</p>
           </div>
+          <p className="text-center text-sm text-cyan-200/80 max-w-3xl mx-auto mb-10">
+            Choose the plan that fits your compliance needs — <span className="text-white font-semibold">marketing compliance</span> (ad copy audit &amp; safe rewrites) is included in both plans; <span className="text-white font-semibold">regulatory documentation drafting</span> (CER / PMCF long-form generator) is available on both plans as an AI-assisted drafting tool requiring human expert review.
+          </p>
 
           <div className="grid md:grid-cols-2 gap-6">
             {/* Starter */}
             <div className="rounded-2xl border border-cyan-400/20 bg-gradient-to-b from-cyan-500/[0.05] to-transparent p-8 backdrop-blur">
-              <p className="text-xs uppercase tracking-[0.25em] text-cyan-300 mb-2">Starter Plan</p>
-              <h3 className="font-display text-2xl text-white mb-2">For Clinics</h3>
+              <p className="text-xs uppercase tracking-[0.25em] text-cyan-300 mb-2">Starter Plan · For Clinics</p>
+              <h3 className="font-display text-2xl text-white mb-2">Marketing Compliance Essentials</h3>
               <p className="text-4xl font-semibold text-white mb-6">$49 <span className="text-base font-normal text-slate-400">/ month</span></p>
+              <p className="text-[11px] uppercase tracking-widest text-cyan-300/80 mb-3">Service 1 · Compliant Ad / Marketing Copy</p>
+              <ul className="space-y-3 text-sm text-slate-300 mb-4">
+                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />50 Compliant Ad Generations per month (resets monthly)</li>
+                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />3 Safe Variations per run (2 Social Hooks + 1 Google Ad)</li>
+                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />Downloadable PDF Compliance &amp; Safety Audit Reports</li>
+                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />Guardrails aligned to FDA &amp; EU MDR frameworks (drafts require human expert review)</li>
+              </ul>
+              <p className="text-[11px] uppercase tracking-widest text-purple-300/80 mb-3">Service 2 · Regulatory Documentation</p>
               <ul className="space-y-3 text-sm text-slate-300 mb-8">
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />50 Compliant Ad Generations per month (Resets monthly)</li>
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />3 Instant Safe Variations per run (2 Social Hooks + 1 Google Ad)</li>
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />Downloadable PDF Compliance & Safety Audit Reports</li>
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />Guardrails verified under FDA & EU MDR frameworks</li>
+                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />Access to CER / PMCF long-form draft generator (AI-assisted drafts; human expert review required)</li>
               </ul>
               <a
                 href="https://buy.stripe.com/6oU9ASfwKfSdd9Sa701wY00"
@@ -845,15 +899,20 @@ export default function MedAdComplianceAI() {
             <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-purple-500 via-cyan-400 to-purple-500">
               <div className="rounded-2xl bg-[#0a0d1e] p-8 h-full">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/40 text-purple-200 text-[11px] uppercase tracking-widest mb-4">
-                  <Crown className="w-3 h-3" /> Best for XPRIZE Enterprise Validation
+                  <Crown className="w-3 h-3" /> Best for Agencies &amp; Enterprise
                 </div>
                 <p className="text-xs uppercase tracking-[0.25em] text-purple-300 mb-2">Agency Premium</p>
-                <h3 className="font-display text-2xl text-white mb-2">For Agencies & Enterprise</h3>
+                <h3 className="font-display text-2xl text-white mb-2">For Agencies &amp; Enterprise</h3>
                 <p className="text-4xl font-semibold text-white mb-6">$149 <span className="text-base font-normal text-slate-400">/ month</span></p>
-                <ul className="space-y-3 text-sm text-slate-300 mb-8">
-                  <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />250 Advanced Ad Audit Generations per month</li>
-                  <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />White-Label PDF Export (Add your own agency logo to reports)</li>
-                  <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />Deep Anti-Hallucination Filtering (Powered by Gemini Enterprise)</li>
+                <p className="text-[11px] uppercase tracking-widest text-cyan-300/80 mb-3">Service 1 · Compliant Ad / Marketing Copy</p>
+                <ul className="space-y-3 text-sm text-slate-300 mb-4">
+                  <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />250 Advanced Ad Audit Generations per month</li>
+                  <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />White-Label PDF Export (add your agency logo to reports)</li>
+                  <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />Deep Anti-Hallucination Filtering (Gemini-powered)</li>
+                </ul>
+                <p className="text-[11px] uppercase tracking-widest text-purple-300/80 mb-3">Service 2 · Regulatory Documentation</p>
+                <ul className="space-y-3 text-sm text-slate-300 mb-4">
+                  <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />Full CER &amp; PMCF long-form draft generator (AI-assisted drafts; human expert review required)</li>
                   <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />Priority senior medical-writer consultation fallback for complex clinical studies</li>
                 </ul>
                 <a
@@ -867,6 +926,9 @@ export default function MedAdComplianceAI() {
               </div>
             </div>
           </div>
+          <p className="text-center text-[11px] text-slate-500 max-w-3xl mx-auto mt-8 italic">
+            All content produced by MedAd Compliance AI — ad copy audits and CER/PMCF drafts — is an AI-generated draft that requires human expert review and validation before use in regulatory submissions, patient-facing communications, or paid advertising. No claim of certified FDA or EU MDR compliance outcomes is made.
+          </p>
         </section>
       </div>
     </div>
