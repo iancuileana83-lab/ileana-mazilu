@@ -1,6 +1,16 @@
 import { useState } from "react";
-import { Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown, Download, XCircle, FileText, Repeat, ClipboardCheck, Stethoscope } from "lucide-react";
+import { Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown, Download, XCircle, FileText, Repeat, ClipboardCheck, Stethoscope, Mail } from "lucide-react";
 import jsPDF from "jspdf";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { runAudit, severityColor, type AuditReport } from "@/lib/medad-audit";
 import {
   generateCer,
@@ -53,8 +63,38 @@ export default function MedAdComplianceAI() {
     cerReference: "",
   });
 
+  // Consultation request modal state
+  const [consultOpen, setConsultOpen] = useState(false);
+  const [consultName, setConsultName] = useState("");
+  const [consultEmail, setConsultEmail] = useState("");
+  const [consultMessage, setConsultMessage] = useState("");
+  const [consultError, setConsultError] = useState<string | null>(null);
+
   const toggleFramework = (f: string) => {
     setFrameworks((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
+  };
+
+  const submitConsultation = (e: React.FormEvent) => {
+    e.preventDefault();
+    setConsultError(null);
+    if (!consultName.trim() || !consultEmail.trim() || !consultMessage.trim()) {
+      setConsultError("Please fill in all fields before submitting.");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(consultEmail.trim())) {
+      setConsultError("Please enter a valid email address.");
+      return;
+    }
+    const subject = encodeURIComponent("Agency Premium — Priority Email Consultation Request");
+    const body = encodeURIComponent(
+      `Name: ${consultName.trim()}\nEmail: ${consultEmail.trim()}\n\nMessage:\n${consultMessage.trim()}`
+    );
+    window.location.href = `mailto:maziluileana88@gmail.com?subject=${subject}&body=${body}`;
+    setConsultOpen(false);
+    setConsultName("");
+    setConsultEmail("");
+    setConsultMessage("");
   };
 
   const handleGenerate = () => {
@@ -915,6 +955,76 @@ export default function MedAdComplianceAI() {
                   <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />Full CER &amp; PMCF long-form draft generator (AI-assisted drafts; human expert review required)</li>
                   <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />Priority email consultation with senior medical writer for complex clinical studies (response via email, no live calls)</li>
                 </ul>
+
+                <div className="rounded-xl border border-purple-400/20 bg-purple-500/[0.05] p-4 mb-6">
+                  <p className="text-sm text-slate-200 mb-3">
+                    Submit your consultation request here — our senior medical writer will respond via email within <span className="text-white font-semibold">2–3 business days</span>.
+                  </p>
+                  <Dialog open={consultOpen} onOpenChange={setConsultOpen}>
+                    <DialogTrigger asChild>
+                      <button className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-lg border border-purple-400/40 bg-purple-500/10 text-purple-200 hover:bg-purple-500/20 hover:text-white font-medium text-sm transition">
+                        <Mail className="w-4 h-4" />
+                        Request Consultation
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-[#0a0d1e] border border-white/10 text-slate-100 max-w-md">
+                      <DialogHeader>
+                        <DialogTitle className="text-white font-display text-xl">Request Priority Email Consultation</DialogTitle>
+                        <DialogDescription className="text-slate-400">
+                          Fill in your details and we will email you back within 2–3 business days. No live calls.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <form onSubmit={submitConsultation} className="space-y-4 mt-2">
+                        <div>
+                          <label className="text-xs uppercase tracking-widest text-slate-400 mb-2 block">Name</label>
+                          <Input
+                            value={consultName}
+                            onChange={(e) => setConsultName(e.target.value)}
+                            placeholder="Your name"
+                            className="bg-[#05060f] border-white/10 text-white placeholder:text-slate-600 focus:border-purple-400/60"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs uppercase tracking-widest text-slate-400 mb-2 block">Email</label>
+                          <Input
+                            type="email"
+                            value={consultEmail}
+                            onChange={(e) => setConsultEmail(e.target.value)}
+                            placeholder="you@company.com"
+                            className="bg-[#05060f] border-white/10 text-white placeholder:text-slate-600 focus:border-purple-400/60"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs uppercase tracking-widest text-slate-400 mb-2 block">Message</label>
+                          <Textarea
+                            value={consultMessage}
+                            onChange={(e) => setConsultMessage(e.target.value)}
+                            placeholder="Describe your clinical study or regulatory documentation needs..."
+                            rows={4}
+                            className="bg-[#05060f] border-white/10 text-white placeholder:text-slate-600 focus:border-purple-400/60 resize-none"
+                          />
+                        </div>
+                        {consultError && (
+                          <p className="text-sm text-rose-300 flex items-center gap-2">
+                            <AlertTriangle className="w-4 h-4" />
+                            {consultError}
+                          </p>
+                        )}
+                        <button
+                          type="submit"
+                          className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-400 hover:to-cyan-400 text-white font-semibold transition"
+                        >
+                          <Mail className="w-4 h-4" />
+                          Send Consultation Request
+                        </button>
+                        <p className="text-xs text-slate-500 text-center">
+                          This opens your email client with a pre-filled message addressed to maziluileana88@gmail.com.
+                        </p>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+
                 <a
                   href="https://buy.stripe.com/aFa3cuesG49vedW7YS1wY01"
                   target="_blank"
