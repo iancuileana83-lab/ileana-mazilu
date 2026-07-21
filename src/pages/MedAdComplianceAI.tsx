@@ -913,7 +913,7 @@ export default function MedAdComplianceAI() {
                 <p className="text-[11px] uppercase tracking-widest text-purple-300/80 mb-3">Service 2 · Regulatory Documentation</p>
                 <ul className="space-y-3 text-sm text-slate-300 mb-4">
                   <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />Full CER &amp; PMCF long-form draft generator (AI-assisted drafts; human expert review required)</li>
-                  <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />Priority senior medical-writer consultation fallback for complex clinical studies</li>
+                  <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />Priority email consultation with senior medical writer for complex clinical studies (response via email, no live calls)</li>
                 </ul>
                 <a
                   href="https://buy.stripe.com/aFa3cuesG49vedW7YS1wY01"
