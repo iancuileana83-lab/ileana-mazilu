@@ -119,7 +119,26 @@ export default function MedAdComplianceAI() {
     doc.setFontSize(10);
     doc.setTextColor(180, 200, 220);
     doc.text("Regulatory Audit Report", margin, 50);
-    y = 100;
+    y = 90;
+
+    // Prominent draft disclaimer banner
+    doc.setFillColor(254, 243, 199);
+    doc.rect(margin, y, maxWidth, 40, "F");
+    doc.setDrawColor(217, 119, 6);
+    doc.rect(margin, y, maxWidth, 40);
+    doc.setTextColor(120, 53, 15);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("AI-GENERATED DRAFT — REQUIRES HUMAN EXPERT REVIEW", margin + 10, y + 15);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(
+      "Ad copy, rewrites and audit findings are AI-generated drafts. Review with a qualified medical writer and legal counsel before publication. No guaranteed FDA / EU MDR compliance outcome is implied.",
+      margin + 10,
+      y + 28,
+      { maxWidth: maxWidth - 20 }
+    );
+    y += 56;
 
     // Metadata
     drawSectionHeader("Audit Metadata");
