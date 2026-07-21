@@ -662,6 +662,138 @@ export default function MedAdComplianceAI() {
         </section>
 
 
+        {/* LONG-FORM REGULATORY DOC GENERATOR (CER / PMCF) */}
+        <section className="relative px-6 md:px-12 py-16 max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-xs uppercase tracking-[0.3em] text-purple-300/80 mb-3">Regulatory Documentation Engine</p>
+            <h2 className="font-display text-3xl md:text-4xl font-semibold text-white">
+              Long-Form <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-300">CER & PMCF</span> Generator
+            </h2>
+            <p className="mt-4 text-slate-400 max-w-3xl mx-auto">
+              Generate structured, MDR 2017/745-aligned draft documentation — a 10-section Clinical Evaluation Report or a 5-section Post-Market Clinical Follow-Up plan — from a compact device profile. Every section is populated with substantive, audit-ready content and exported as a formatted PDF.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-8 md:p-10 backdrop-blur">
+            {/* Mode switch */}
+            <div className="flex gap-3 mb-8">
+              {(["CER", "PMCF"] as const).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => { setDocMode(m); setGeneratedDoc(null); }}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-semibold transition ${docMode === m ? "border-cyan-400/60 bg-cyan-400/10 text-cyan-200" : "border-white/10 bg-[#0a0d1e] text-slate-400 hover:text-white"}`}
+                >
+                  {m === "CER" ? <ClipboardCheck className="w-4 h-4" /> : <Stethoscope className="w-4 h-4" />}
+                  {m === "CER" ? "Clinical Evaluation Report (10 sections)" : "PMCF Plan (5 sections)"}
+                </button>
+              ))}
+            </div>
+
+            {docMode === "CER" ? (
+              <div className="grid md:grid-cols-2 gap-5">
+                <FieldInput label="Device name" value={cerInputs.deviceName} onChange={(v) => setCerInputs({ ...cerInputs, deviceName: v })} placeholder="e.g. OncoPort IV Access System" />
+                <FieldInput label="Manufacturer / Legal manufacturer" value={cerInputs.manufacturer} onChange={(v) => setCerInputs({ ...cerInputs, manufacturer: v })} placeholder="e.g. MedDevice EU S.A." />
+                <FieldSelect label="MDR classification" value={cerInputs.classification} onChange={(v) => setCerInputs({ ...cerInputs, classification: v as DeviceClass })} options={["I", "IIa", "IIb", "III"]} />
+                <FieldInput label="Therapeutic area" value={cerInputs.therapeuticArea} onChange={(v) => setCerInputs({ ...cerInputs, therapeuticArea: v })} placeholder="e.g. Oncology, Cardiology" />
+                <FieldTextarea className="md:col-span-2" label="Intended purpose (verbatim from IFU)" value={cerInputs.intendedPurpose} onChange={(v) => setCerInputs({ ...cerInputs, intendedPurpose: v })} placeholder="e.g. Long-term central venous access for the administration of chemotherapy in adult oncology patients." />
+                <FieldInput label="Target patient population" value={cerInputs.patientPopulation} onChange={(v) => setCerInputs({ ...cerInputs, patientPopulation: v })} placeholder="e.g. adult oncology patients requiring long-term IV chemotherapy" />
+                <FieldSelect label="Evaluation route" value={cerInputs.evaluationRoute} onChange={(v) => setCerInputs({ ...cerInputs, evaluationRoute: v as EvaluationRoute })} options={[["equivalence", "Equivalence"], ["clinical-investigation", "Clinical investigation"], ["hybrid", "Hybrid"]]} />
+                <FieldTextarea className="md:col-span-2" label="Technical characteristics, materials, mechanism of action" value={cerInputs.technicalCharacteristics} onChange={(v) => setCerInputs({ ...cerInputs, technicalCharacteristics: v })} placeholder="Titanium port body, silicone septum, polyurethane catheter. Subcutaneous implantation with catheter tip at cavoatrial junction. Passive access via non-coring needle..." />
+                {(cerInputs.evaluationRoute === "equivalence" || cerInputs.evaluationRoute === "hybrid") && (
+                  <FieldInput className="md:col-span-2" label="Equivalent (predicate) device" value={cerInputs.equivalentDevice || ""} onChange={(v) => setCerInputs({ ...cerInputs, equivalentDevice: v })} placeholder="e.g. PowerPort ClearVUE (Bard Access Systems)" />
+                )}
+                <FieldTextarea className="md:col-span-2" label="Known residual risks (optional)" value={cerInputs.knownRisks || ""} onChange={(v) => setCerInputs({ ...cerInputs, knownRisks: v })} placeholder="e.g. catheter-related thrombosis, infection, extravasation, mechanical failure" />
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-5">
+                <FieldInput label="Device name" value={pmcfInputs.deviceName} onChange={(v) => setPmcfInputs({ ...pmcfInputs, deviceName: v })} placeholder="e.g. OncoPort IV Access System" />
+                <FieldInput label="Manufacturer" value={pmcfInputs.manufacturer} onChange={(v) => setPmcfInputs({ ...pmcfInputs, manufacturer: v })} placeholder="e.g. MedDevice EU S.A." />
+                <FieldSelect label="MDR classification" value={pmcfInputs.classification} onChange={(v) => setPmcfInputs({ ...pmcfInputs, classification: v as DeviceClass })} options={["I", "IIa", "IIb", "III"]} />
+                <FieldInput label="Therapeutic area" value={pmcfInputs.therapeuticArea} onChange={(v) => setPmcfInputs({ ...pmcfInputs, therapeuticArea: v })} />
+                <FieldTextarea className="md:col-span-2" label="Intended purpose" value={pmcfInputs.intendedPurpose} onChange={(v) => setPmcfInputs({ ...pmcfInputs, intendedPurpose: v })} />
+                <FieldInput label="Target patient population" value={pmcfInputs.patientPopulation} onChange={(v) => setPmcfInputs({ ...pmcfInputs, patientPopulation: v })} />
+                <FieldSelect label="PMCF method" value={pmcfInputs.pmcfMethod} onChange={(v) => setPmcfInputs({ ...pmcfInputs, pmcfMethod: v as PmcfInputs["pmcfMethod"] })} options={[["prospective-registry", "Prospective registry"], ["survey", "HCP / patient survey"], ["literature-surveillance", "Literature surveillance"], ["post-market-study", "Post-market study"], ["mixed", "Mixed-method"]]} />
+                <FieldInput label="Duration (months)" type="number" value={String(pmcfInputs.pmcfDurationMonths)} onChange={(v) => setPmcfInputs({ ...pmcfInputs, pmcfDurationMonths: Math.max(3, parseInt(v) || 24) })} />
+                <FieldInput className="md:col-span-2" label="Linked CER reference (optional)" value={pmcfInputs.cerReference || ""} onChange={(v) => setPmcfInputs({ ...pmcfInputs, cerReference: v })} placeholder="e.g. CER-OncoPort-v3.2 dated 2026-04-15" />
+              </div>
+            )}
+
+            <button
+              onClick={handleGenerateDoc}
+              disabled={docLoading || (docMode === "CER" ? !cerInputs.deviceName || !cerInputs.intendedPurpose : !pmcfInputs.deviceName || !pmcfInputs.intendedPurpose)}
+              className="mt-8 w-full relative overflow-hidden rounded-xl py-4 px-6 font-semibold text-white bg-gradient-to-r from-purple-500 via-cyan-400 to-cyan-500 hover:from-purple-400 hover:to-cyan-400 transition shadow-[0_0_40px_-10px_rgba(168,85,247,0.6)] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {docLoading ? (
+                <span className="flex items-center justify-center gap-3">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Composing MDR-aligned {docMode} draft…
+                </span>
+              ) : (
+                `Generate Structured ${docMode} Draft`
+              )}
+            </button>
+          </div>
+
+          {/* Generated document viewer */}
+          {generatedDoc && (
+            <div className="mt-10 rounded-3xl border border-white/10 bg-[#0a0d1e]/70 overflow-hidden animate-fade-in">
+              <div className="p-6 md:p-8 border-b border-white/10 bg-gradient-to-r from-purple-500/[0.08] to-cyan-500/[0.05]">
+                <p className="text-xs uppercase tracking-[0.3em] text-cyan-300 mb-2">{generatedDoc.type} · Draft</p>
+                <h3 className="font-display text-2xl md:text-3xl text-white">{generatedDoc.title}</h3>
+                <p className="text-sm text-slate-400 mt-1">{generatedDoc.subtitle}</p>
+              </div>
+
+              <div className="grid md:grid-cols-[260px_1fr]">
+                {/* Section nav */}
+                <aside className="border-b md:border-b-0 md:border-r border-white/10 bg-[#05060f]/60 p-3 max-h-[560px] overflow-y-auto">
+                  {generatedDoc.sections.map((s, idx) => (
+                    <button
+                      key={s.number}
+                      onClick={() => setActiveDocSection(idx)}
+                      className={`w-full text-left px-3 py-2.5 rounded-lg mb-1 text-sm transition ${activeDocSection === idx ? "bg-cyan-400/10 text-cyan-200 border border-cyan-400/30" : "text-slate-400 hover:text-white hover:bg-white/[0.03] border border-transparent"}`}
+                    >
+                      <span className="text-[10px] uppercase tracking-widest text-slate-500 mr-2">§{s.number}</span>
+                      {s.title}
+                    </button>
+                  ))}
+                </aside>
+
+                {/* Section content */}
+                <div className="p-6 md:p-10 max-h-[560px] overflow-y-auto">
+                  {(() => {
+                    const s = generatedDoc.sections[activeDocSection];
+                    return (
+                      <>
+                        <p className="text-xs uppercase tracking-[0.3em] text-purple-300 mb-2">Section {s.number}</p>
+                        <h4 className="font-display text-2xl text-white mb-6">{s.title}</h4>
+                        <div className="space-y-5 text-slate-300 text-[15px] leading-relaxed">
+                          {s.paragraphs.map((p, i) => (
+                            <p key={i} className="whitespace-pre-wrap">{p}</p>
+                          ))}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-white/10 bg-[#05060f]/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="text-xs text-slate-400">
+                  {generatedDoc.sections.length} sections generated · {generatedDoc.generatedAt.toLocaleString()}
+                </div>
+                <button
+                  onClick={downloadDocPDF}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-400 hover:to-cyan-400 text-white font-semibold text-sm shadow-[0_0_30px_-10px_rgba(168,85,247,0.6)] transition"
+                >
+                  <Download className="w-4 h-4" />
+                  Download Full {generatedDoc.type} as PDF
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+
+
         {/* CTA */}
         <section className="relative px-6 md:px-12 py-16 max-w-5xl mx-auto">
           <div className="rounded-3xl p-[1px] bg-gradient-to-r from-cyan-500 via-purple-500 to-cyan-500">
