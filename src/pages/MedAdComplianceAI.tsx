@@ -999,7 +999,8 @@ export default function MedAdComplianceAI() {
                           <Textarea
                             value={consultMessage}
                             onChange={(e) => setConsultMessage(e.target.value)}
-                            placeholder="Describe your clinical study or regulatory documentation needs...]                            rows={4}
+                            placeholder="Describe your clinical study or regulatory documentation needs..."
+                            rows={4}
                             className="bg-[#05060f] border-white/10 text-white placeholder:text-slate-600 focus:border-purple-400/60 resize-none"
                           />
                         </div>
