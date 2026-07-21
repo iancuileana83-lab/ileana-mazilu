@@ -309,6 +309,25 @@ export default function MedAdComplianceAI() {
     doc.text(`Generated ${generatedDoc.generatedAt.toLocaleString()}`, margin, 78);
     y = 120;
 
+    // Prominent draft disclaimer banner
+    doc.setFillColor(254, 243, 199);
+    doc.rect(margin, y, maxWidth, 44, "F");
+    doc.setDrawColor(217, 119, 6);
+    doc.rect(margin, y, maxWidth, 44);
+    doc.setTextColor(120, 53, 15);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("AI-GENERATED DRAFT — REQUIRES HUMAN EXPERT REVIEW", margin + 10, y + 16);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(
+      "This document is an AI-assisted draft. It must be reviewed, verified and formally accepted by a qualified medical writer and the manufacturer's PRRC before regulatory use. No guaranteed EU MDR / FDA compliance outcome is implied.",
+      margin + 10,
+      y + 30,
+      { maxWidth: maxWidth - 20 }
+    );
+    y += 60;
+
     // Metadata block
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
