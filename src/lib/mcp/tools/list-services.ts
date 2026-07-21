@@ -25,7 +25,7 @@ export default defineTool({
         id: "regulatory-submissions",
         name: "Regulatory Submissions",
         description:
-          "Technical documentation and dossier authoring for EU MDR, FDA, and EUDAMED submissions across 12+ therapeutic areas.",
+          "Technical documentation and dossier authoring for EU MDR, FDA, and EUDAMED submissions, with a primary focus on oncology and medical devices.",
       },
       {
         id: "medad-compliance-ai",

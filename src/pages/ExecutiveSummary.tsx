@@ -10,16 +10,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 const stats = [
   { label: "Years in Pharma", value: "20+" },
   { label: "Medical Writing Focus", value: "3 yrs" },
-  { label: "Regulatory Submissions", value: "80+" },
-  { label: "Therapeutic Areas", value: "12" },
 ];
 
 const highlights = [
-  "Led clinical evaluation report authoring for Class III medical devices across EU MDR 2017/745 requirements",
-  "Principal medical writer for 40+ oncology PMCF study reports submitted to Notified Bodies",
-  "Developed systematic literature review protocols aligned with MEDDEV 2.7/1 Rev. 4 guidelines",
-  "Expert contributor to pharmacovigilance safety reports (PSURs) for multinational pharma sponsors",
-  "Designed standardized CER templates adopted by three Fortune 500 medtech organizations",
+  "Authoring clinical evaluation reports (CERs) for medical devices in alignment with EU MDR 2017/745 requirements",
+  "Experience preparing post-market clinical follow-up (PMCF) documentation with a focus on oncology",
+  "Applying systematic literature review methodology aligned with MEDDEV 2.7/1 Rev. 4 and MDCG 2020 guidelines",
+  "Contributing to pharmacovigilance safety reporting (PSURs) drawing on 20+ years of pharmaceutical practice",
+  "Building reusable CER and PMCF templates that support consistent, audit-ready regulatory documentation",
 ];
 
 const credentials = [
@@ -97,7 +95,7 @@ export default function ExecutiveSummary() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {stats.map((stat) => (
           <div key={stat.label} className="report-section text-center py-6">
             <p className="text-3xl font-display font-bold text-primary">{stat.value}</p>
@@ -105,6 +103,9 @@ export default function ExecutiveSummary() {
           </div>
         ))}
       </div>
+      <p className="text-sm text-foreground/75 font-body italic text-center -mt-2">
+        20+ years of pharmacy experience, with 3 years specializing in medical writing and regulatory documentation (CER, PMCF, PSUR).
+      </p>
 
       {/* Key Achievements */}
       <div className="report-section">
@@ -191,7 +192,7 @@ export default function ExecutiveSummary() {
               </div>
               <h3 className="font-display text-lg font-semibold text-foreground">Therapeutic Expertise Matrix</h3>
               <p className="text-sm text-muted-foreground font-body leading-relaxed">
-                A comprehensive map of 12 therapeutic areas covered across 80+ regulatory submissions.
+                An overview of the therapeutic areas and document types I can support across regulatory writing engagements.
               </p>
               <Button variant="outline" size="sm" className="w-full gap-2 font-body" onClick={() => setOpenModal("matrix")}>
                 View Matrix
@@ -249,7 +250,7 @@ export default function ExecutiveSummary() {
           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="font-display text-xl">Therapeutic Footprint</DialogTitle>
-              <DialogDescription className="font-body">Representative areas across 80+ submissions</DialogDescription>
+              <DialogDescription className="font-body">Areas of expertise and document types I can support</DialogDescription>
             </DialogHeader>
             <div className="space-y-2 font-body text-sm text-foreground/85 leading-relaxed">
               {[
@@ -266,7 +267,7 @@ export default function ExecutiveSummary() {
                 </div>
               ))}
               <p className="text-muted-foreground italic pt-2">
-                ...and 6 other specialized fields including Gynecology, Ophthalmology, and AI-Diagnostics.
+                Primary focus on oncology and medical devices, with adjacent experience across additional therapeutic areas.
               </p>
             </div>
           </DialogContent>
@@ -287,7 +288,7 @@ export default function ExecutiveSummary() {
               </Button>
             </a>
             <p className="text-xs text-muted-foreground font-body italic">
-              For a complete portfolio of my 80+ regulatory submissions and therapeutic deep-dives, please contact me directly.
+              For a detailed discussion of my regulatory writing experience and therapeutic focus areas, please contact me directly.
             </p>
           </div>
 

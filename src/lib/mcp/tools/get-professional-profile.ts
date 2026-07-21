@@ -15,7 +15,7 @@ export default defineTool({
       phone: "+40 766 687 508",
       linkedin: "https://www.linkedin.com/in/ileana-mazilu-aa211181",
       availability: "Available for Senior Medical Writing Consultations",
-      bio: "Senior Medical Writer with 80+ regulatory submissions across 12+ therapeutic areas, specializing in Class III Clinical Evaluation Reports (CERs), MDCG 2020-aligned literature search protocols, benefit-risk analysis, and AI-assisted regulatory workflows.",
+      bio: "Senior Clinical Evaluation Medical Writer and Pharmacy Technician with 20+ years of pharmaceutical experience and 3 years specializing in medical writing and regulatory documentation (CER, PMCF, PSUR), aligned with EU MDR 2017/745, MEDDEV 2.7/1 Rev. 4, and MDCG 2020 guidelines.",
       website: "https://ileana-mazilu.lovable.app",
     };
     return {
