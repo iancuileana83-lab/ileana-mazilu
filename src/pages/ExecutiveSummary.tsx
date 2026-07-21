@@ -24,11 +24,11 @@ const highlights = [
 
 const credentials = [
   {
-    title: "Pharmacy Degree",
+    title: "Pharmacy Assistant Diploma (Postliceală de Farmacie)",
     institution: "Carol Davila University of Medicine and Pharmacy",
     year: "2005",
     icon: GraduationCap,
-    description: "Foundational training in pharmacology, clinical safety, and pharmaceutical sciences.",
+    description: "Practical pharmaceutical training supporting 20+ years of hands-on experience in pharmacology, clinical safety, and pharmacy practice.",
   },
   {
     title: "Engineering Degree",
@@ -85,9 +85,9 @@ export default function ExecutiveSummary() {
             <Badge variant="secondary" className="clinical-badge">ICH-GCP</Badge>
           </div>
           <p className="text-sm text-foreground/80 leading-relaxed font-body max-w-2xl">
-            Senior consultant with over 20 years of extensive experience in the pharmaceutical sector,
-            providing a deep understanding of pharmacology and clinical safety. Over the last 3 years,
-            I have specialized as a Medical Writer with a primary focus on Oncology and Clinical Evidence Appraisal,
+            Senior Clinical Evaluation Medical Writer and Pharmacy Technician with over 20 years of practical experience
+            in the pharmaceutical sector, providing a deep understanding of pharmacology and clinical safety.
+            Over the last 3 years, I have specialized as a Medical Writer with a primary focus on Oncology and Clinical Evidence Appraisal,
             authoring clinical evaluation reports (CERs), post-market clinical follow-up (PMCF) documentation,
             and periodic safety update reports (PSURs). My career bridges decades of pharmaceutical expertise
             with rigorous clinical evaluation standards, ensuring full compliance with EU MDR 2017/745

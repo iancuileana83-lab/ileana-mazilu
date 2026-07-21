@@ -59,7 +59,7 @@ var list_services_default = defineTool2({
       {
         id: "medad-compliance-ai",
         name: "MedAd Compliance AI",
-        description: "AI-powered medical advertising compliance auditing with pharmacist-verified guardrails for FDA and EU MDR frameworks."
+        description: "AI-powered medical advertising compliance auditing with medical-writer-verified guardrails for FDA and EU MDR frameworks."
       }
     ];
     return {
