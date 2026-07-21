@@ -1,14 +1,3 @@
-import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Heart,
   Brain,
@@ -22,12 +11,11 @@ import {
   Syringe,
   Microscope,
   Dna,
-  Search,
   ArrowRight,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
-/*  1. Therapeutic Footprint                                          */
+/*  Therapeutic Footprint                                             */
 /* ------------------------------------------------------------------ */
 
 const therapeuticAreas = [
@@ -46,59 +34,10 @@ const therapeuticAreas = [
 ];
 
 /* ------------------------------------------------------------------ */
-/*  2. Submissions tracker data                                       */
-/* ------------------------------------------------------------------ */
-
-type SubmissionStatus = "Approved" | "Submitted" | "In Review";
-
-interface Submission {
-  id: number;
-  area: string;
-  docType: string;
-  deviceClass: string;
-  status: SubmissionStatus;
-  year: string;
-}
-
-const submissions: Submission[] = [
-  { id: 1, area: "Oncology", docType: "CER", deviceClass: "Class III", status: "Approved", year: "2025" },
-  { id: 2, area: "Cardiology", docType: "PMCF", deviceClass: "Class III", status: "Approved", year: "2025" },
-  { id: 3, area: "Neurology", docType: "PSUR", deviceClass: "Class IIb", status: "Submitted", year: "2025" },
-  { id: 4, area: "Orthopedics", docType: "CER", deviceClass: "Class III", status: "Approved", year: "2024" },
-  { id: 5, area: "Ophthalmology", docType: "CER", deviceClass: "Class IIb", status: "Approved", year: "2024" },
-  { id: 6, area: "Oncology", docType: "PMCF", deviceClass: "Class III", status: "In Review", year: "2025" },
-  { id: 7, area: "Hematology", docType: "PSUR", deviceClass: "Class IIa", status: "Approved", year: "2024" },
-  { id: 8, area: "Endocrinology", docType: "CER", deviceClass: "Class III", status: "Submitted", year: "2025" },
-  { id: 9, area: "Pulmonology", docType: "PMCF", deviceClass: "Class IIb", status: "Approved", year: "2024" },
-  { id: 10, area: "Immunology", docType: "CER", deviceClass: "Class III", status: "Approved", year: "2023" },
-  { id: 11, area: "Cardiology", docType: "CER", deviceClass: "Class III", status: "Approved", year: "2023" },
-  { id: 12, area: "Oncology", docType: "PSUR", deviceClass: "Class III", status: "Approved", year: "2024" },
-  { id: 13, area: "Neonatology", docType: "CER", deviceClass: "Class IIb", status: "Submitted", year: "2025" },
-  { id: 14, area: "Genomics & Diagnostics", docType: "CER", deviceClass: "Class III", status: "In Review", year: "2025" },
-  { id: 15, area: "Neurology", docType: "CER", deviceClass: "Class III", status: "Approved", year: "2023" },
-];
-
-const statusColor: Record<SubmissionStatus, string> = {
-  Approved: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  Submitted: "bg-amber-100 text-amber-800 border-amber-200",
-  "In Review": "bg-sky-100 text-sky-800 border-sky-200",
-};
-
-/* ------------------------------------------------------------------ */
 /*  Component                                                         */
 /* ------------------------------------------------------------------ */
 
 export default function ProjectHighlights() {
-  const [search, setSearch] = useState("");
-
-  const filtered = submissions.filter(
-    (s) =>
-      s.area.toLowerCase().includes(search.toLowerCase()) ||
-      s.docType.toLowerCase().includes(search.toLowerCase()) ||
-      s.deviceClass.toLowerCase().includes(search.toLowerCase()) ||
-      s.status.toLowerCase().includes(search.toLowerCase()),
-  );
-
   return (
     <div className="space-y-10 animate-fade-in">
       {/* Page header */}
