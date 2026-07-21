@@ -741,6 +741,10 @@ export default function MedAdComplianceAI() {
           {/* Generated document viewer */}
           {generatedDoc && (
             <div className="mt-10 rounded-3xl border border-white/10 bg-[#0a0d1e]/70 overflow-hidden animate-fade-in">
+              <div className="px-6 py-3 bg-amber-500/10 border-b border-amber-400/30 text-amber-200 text-xs flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span><span className="font-semibold">AI-generated draft.</span> This {generatedDoc.type} is an AI-assisted draft and requires human expert review, factual verification, and PRRC sign-off before use in a regulatory submission. No guaranteed EU MDR compliance outcome is implied.</span>
+              </div>
               <div className="p-6 md:p-8 border-b border-white/10 bg-gradient-to-r from-purple-500/[0.08] to-cyan-500/[0.05]">
                 <p className="text-xs uppercase tracking-[0.3em] text-cyan-300 mb-2">{generatedDoc.type} · Draft</p>
                 <h3 className="font-display text-2xl md:text-3xl text-white">{generatedDoc.title}</h3>
