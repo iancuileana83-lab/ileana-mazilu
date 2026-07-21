@@ -22,6 +22,23 @@ const highlights = [
   "Designed standardized CER templates adopted by three Fortune 500 medtech organizations",
 ];
 
+const credentials = [
+  {
+    title: "Pharmacy Degree",
+    institution: "Carol Davila University of Medicine and Pharmacy",
+    year: "2005",
+    icon: GraduationCap,
+    description: "Foundational training in pharmacology, clinical safety, and pharmaceutical sciences.",
+  },
+  {
+    title: "Engineering Degree",
+    institution: "USAMV",
+    year: "2012",
+    icon: Award,
+    description: "Technical and analytical foundation supporting medical device evaluation and regulatory systems.",
+  },
+];
+
 export default function ExecutiveSummary() {
   const [openModal, setOpenModal] = useState<string | null>(null);
 
