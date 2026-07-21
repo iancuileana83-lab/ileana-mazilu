@@ -1,7 +1,16 @@
 import { useState } from "react";
-import { Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown, Download, XCircle, FileText, Repeat } from "lucide-react";
+import { Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown, Download, XCircle, FileText, Repeat, ClipboardCheck, Stethoscope } from "lucide-react";
 import jsPDF from "jspdf";
 import { runAudit, severityColor, type AuditReport } from "@/lib/medad-audit";
+import {
+  generateCer,
+  generatePmcf,
+  type CerInputs,
+  type PmcfInputs,
+  type GeneratedDocument,
+  type DeviceClass,
+  type EvaluationRoute,
+} from "@/lib/cer-pmcf-generator";
 
 export default function MedAdComplianceAI() {
   const [loading, setLoading] = useState(false);
