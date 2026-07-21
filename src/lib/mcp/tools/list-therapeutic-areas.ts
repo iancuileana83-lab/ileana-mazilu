@@ -4,7 +4,7 @@ export default defineTool({
   name: "list_therapeutic_areas",
   title: "List therapeutic areas",
   description:
-    "List the 12+ therapeutic areas Ileana Mazilu has covered across 80+ regulatory submissions.",
+    "List the therapeutic areas of expertise and interest that Ileana Mazilu can support in regulatory writing engagements.",
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: () => {

@@ -21,7 +21,7 @@ var get_professional_profile_default = defineTool({
       phone: "+40 766 687 508",
       linkedin: "https://www.linkedin.com/in/ileana-mazilu-aa211181",
       availability: "Available for Senior Medical Writing Consultations",
-      bio: "Senior Medical Writer with 80+ regulatory submissions across 12+ therapeutic areas, specializing in Class III Clinical Evaluation Reports (CERs), MDCG 2020-aligned literature search protocols, benefit-risk analysis, and AI-assisted regulatory workflows.",
+      bio: "Senior Clinical Evaluation Medical Writer and Pharmacy Technician with 20+ years of pharmaceutical experience and 3 years specializing in medical writing and regulatory documentation (CER, PMCF, PSUR), aligned with EU MDR 2017/745, MEDDEV 2.7/1 Rev. 4, and MDCG 2020 guidelines.",
       website: "https://ileana-mazilu.lovable.app"
     };
     return {
@@ -54,7 +54,7 @@ var list_services_default = defineTool2({
       {
         id: "regulatory-submissions",
         name: "Regulatory Submissions",
-        description: "Technical documentation and dossier authoring for EU MDR, FDA, and EUDAMED submissions across 12+ therapeutic areas."
+        description: "Technical documentation and dossier authoring for EU MDR, FDA, and EUDAMED submissions, with a primary focus on oncology and medical devices."
       },
       {
         id: "medad-compliance-ai",
@@ -74,7 +74,7 @@ import { defineTool as defineTool3 } from "npm:@lovable.dev/mcp-js@0.22.2";
 var list_therapeutic_areas_default = defineTool3({
   name: "list_therapeutic_areas",
   title: "List therapeutic areas",
-  description: "List the 12+ therapeutic areas Ileana Mazilu has covered across 80+ regulatory submissions.",
+  description: "List the therapeutic areas of expertise and interest that Ileana Mazilu can support in regulatory writing engagements.",
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: () => {
