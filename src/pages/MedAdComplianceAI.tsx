@@ -541,6 +541,10 @@ export default function MedAdComplianceAI() {
           {/* RESULTS */}
           {report && (
             <div className="mt-10 rounded-3xl border border-white/10 bg-[#0a0d1e]/70 overflow-hidden animate-fade-in">
+              <div className="px-6 py-3 bg-amber-500/10 border-b border-amber-400/30 text-amber-200 text-xs flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span><span className="font-semibold">AI-generated draft.</span> Requires human expert review and validation before publication or regulatory use. No guaranteed FDA/EU MDR compliance outcome is implied.</span>
+              </div>
               {/* Executive summary strip */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5">
                 {[
