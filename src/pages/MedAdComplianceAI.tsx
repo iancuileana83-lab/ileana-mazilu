@@ -872,3 +872,69 @@ export default function MedAdComplianceAI() {
     </div>
   );
 }
+
+// -- Reusable input components for the CER / PMCF console --
+interface FieldBaseProps {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  className?: string;
+}
+
+function FieldInput({ label, value, onChange, placeholder, className = "", type = "text" }: FieldBaseProps & { type?: string }) {
+  return (
+    <div className={className}>
+      <label className="text-xs uppercase tracking-widest text-slate-400 mb-2 block">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full bg-[#0a0d1e] border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-slate-600 text-sm focus:border-cyan-400/60 focus:outline-none"
+      />
+    </div>
+  );
+}
+
+function FieldTextarea({ label, value, onChange, placeholder, className = "" }: FieldBaseProps) {
+  return (
+    <div className={className}>
+      <label className="text-xs uppercase tracking-widest text-slate-400 mb-2 block">{label}</label>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={3}
+        className="w-full bg-[#0a0d1e] border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-slate-600 text-sm focus:border-cyan-400/60 focus:outline-none resize-none"
+      />
+    </div>
+  );
+}
+
+interface FieldSelectProps {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: (string | [string, string])[];
+  className?: string;
+}
+
+function FieldSelect({ label, value, onChange, options, className = "" }: FieldSelectProps) {
+  return (
+    <div className={className}>
+      <label className="text-xs uppercase tracking-widest text-slate-400 mb-2 block">{label}</label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-[#0a0d1e] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-cyan-400/60 focus:outline-none"
+      >
+        {options.map((opt) => {
+          const [v, l] = Array.isArray(opt) ? opt : [opt, opt];
+          return <option key={v} value={v}>{l}</option>;
+        })}
+      </select>
+    </div>
+  );
+}
+
