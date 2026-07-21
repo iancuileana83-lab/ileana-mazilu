@@ -20,6 +20,39 @@ export default function MedAdComplianceAI() {
   const [frameworks, setFrameworks] = useState<string[]>(["FDA Advertising Guidelines"]);
   const [report, setReport] = useState<AuditReport | null>(null);
 
+  // Long-form CER / PMCF regulatory-doc generator state
+  const [docMode, setDocMode] = useState<"CER" | "PMCF">("CER");
+  const [docLoading, setDocLoading] = useState(false);
+  const [generatedDoc, setGeneratedDoc] = useState<GeneratedDocument | null>(null);
+  const [activeDocSection, setActiveDocSection] = useState<number>(0);
+
+  const [cerInputs, setCerInputs] = useState<CerInputs>({
+    deviceName: "",
+    manufacturer: "",
+    classification: "IIb",
+    intendedPurpose: "",
+    therapeuticArea: "Oncology",
+    patientPopulation: "adult patients meeting the CE-marked indication",
+    technicalCharacteristics: "",
+    evaluationRoute: "equivalence",
+    equivalentDevice: "",
+    knownRisks: "",
+    evaluatorName: "Ileana Mazilu",
+    evaluatorCredentials: "",
+  });
+
+  const [pmcfInputs, setPmcfInputs] = useState<PmcfInputs>({
+    deviceName: "",
+    manufacturer: "",
+    classification: "IIb",
+    intendedPurpose: "",
+    therapeuticArea: "Oncology",
+    patientPopulation: "adult patients meeting the CE-marked indication",
+    pmcfMethod: "prospective-registry",
+    pmcfDurationMonths: 24,
+    cerReference: "",
+  });
+
   const toggleFramework = (f: string) => {
     setFrameworks((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
   };
