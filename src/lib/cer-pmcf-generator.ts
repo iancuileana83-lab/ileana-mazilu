@@ -343,21 +343,25 @@ function cerEvaluators(i: CerInputs): DocSection {
   const name = i.evaluatorName || "Ileana Mazilu";
   const cred =
     i.evaluatorCredentials ||
-    "Senior Medical Writer; 20+ years pharmaceutical experience; specialised in Oncology and Clinical Evidence Appraisal; trained on ICH-GCP; author of Clinical Evaluation Reports for high-risk medical devices under MDR 2017/745.";
+    "Pharmacy Assistant Diploma (Postliceală de Farmacie, Carol Davila, 2005) with 20+ years of practical pharmacy experience; 3 years specializing in medical writing and regulatory documentation (CER, PMCF, PSUR); trained in Clinical Pharmacology, Pharmacovigilance, and Good Clinical Practice (NIH GCP, 2023); Certificate of Specialization in Oncology (ECMER, 2023).";
   return {
     number: "10",
     title: "Qualification of Evaluators",
     paragraphs: [
       j(
-        `This CER has been authored and signed by ${name}. Documented qualifications: ${cred}`
+        `This CER has been drafted by ${name}. Documented qualifications: ${cred}`
       ),
       j(
-        `The evaluator meets the requirements of MEDDEV 2.7/1 Rev. 4 §6.4 with respect to higher-education`,
-        `degree, professional experience in the relevant field (${i.therapeuticArea}), and demonstrated`,
-        `knowledge of research methodology, information management, regulatory requirements, and medical`,
-        `writing. Any deviation from the recommended profile is justified in a Curriculum Vitae annexed to`,
-        `this report. The evaluator's independence from decisions that could bias the appraisal is declared;`,
-        `any conflicts of interest are disclosed in the annex.`
+        `Qualification basis: to be confirmed against MEDDEV 2.7/1 Rev. 4 §6.4 requirements by the`,
+        `responsible person / manufacturer. The evaluator's Curriculum Vitae, declarations of independence,`,
+        `and disclosures of any conflicts of interest are annexed to this report for review.`
+      ),
+      j(
+        `Disclaimer: The evaluator's suitability for the specific device, therapeutic area, and risk class`,
+        `covered by this report must be independently verified and formally accepted by the manufacturer's`,
+        `Person Responsible for Regulatory Compliance (PRRC) in accordance with Article 15 of Regulation`,
+        `(EU) 2017/745, prior to release of this CER. No claim of prior authorship of CERs for high-risk`,
+        `devices, nor of automatic MEDDEV 2.7/1 Rev. 4 §6.4 compliance, is made by this generator.`
       ),
     ],
   };
