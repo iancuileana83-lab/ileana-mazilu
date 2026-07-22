@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/AppLayout";
 import ExecutiveSummary from "./pages/ExecutiveSummary";
 import ClinicalEvidenceVault from "./pages/ClinicalEvidenceVault";
-import RegulatoryCredentials from "./pages/RegulatoryCredentials";
+
 import Services from "./pages/Services";
 import ProjectHighlights from "./pages/ProjectHighlights";
 import MedAdComplianceAI from "./pages/MedAdComplianceAI";
@@ -24,7 +24,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<ExecutiveSummary />} />
             <Route path="/evidence" element={<ClinicalEvidenceVault />} />
-            <Route path="/credentials" element={<RegulatoryCredentials />} />
+            
             <Route path="/services" element={<Services />} />
             <Route path="/highlights" element={<ProjectHighlights />} />
             <Route path="/medad-ai" element={<MedAdComplianceAI />} />
