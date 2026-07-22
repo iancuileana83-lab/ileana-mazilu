@@ -8,32 +8,57 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const stats = [
-  { label: "Years in Pharma", value: "20+" },
-  { label: "Medical Writing Focus", value: "3 yrs" },
+  { label: "Years in Pharmacy Practice", value: "20" },
+  { label: "Writing & Self-Study Focus", value: "2024–Now" },
 ];
 
-const highlights = [
-  "Authoring clinical evaluation reports (CERs) for medical devices in alignment with EU MDR 2017/745 requirements",
-  "Experience preparing post-market clinical follow-up (PMCF) documentation with a focus on oncology",
-  "Applying systematic literature review methodology aligned with MEDDEV 2.7/1 Rev. 4 and MDCG 2020 guidelines",
-  "Contributing to pharmacovigilance safety reporting (PSURs) drawing on 20+ years of pharmaceutical practice",
-  "Building reusable CER and PMCF templates that support consistent, audit-ready regulatory documentation",
+const experience = [
+  {
+    role: "Senior Pharmacy & Clinical Technician",
+    org: "Romania",
+    period: "April 2004 – May 2024",
+    bullets: [
+      "Monitored and documented adverse drug reactions (ADRs), supporting patient safety and regulatory reporting requirements.",
+      "Provided medication and drug-interaction guidance to patients and healthcare professionals.",
+      "Maintained accurate pharmaceutical records and inventory within digital healthcare systems.",
+      "Translated complex therapeutic information into clear, accessible guidance for patients.",
+    ],
+  },
+  {
+    role: "Independent Projects",
+    org: "Self-directed",
+    period: "2024 – Present",
+    bullets: [
+      "Researched and drafted a portfolio of evidence-based health articles, using PubMed, Cochrane, and Medscape as primary sources.",
+      "Self-studied EU MDR regulatory writing concepts (CER, PMCF, PSUR) and pharmacovigilance fundamentals.",
+      "Designed and built this portfolio website and an AI-powered document-review prototype using no-code tools (Wix, Lovable), including hands-on use of the Gemini API.",
+      "Participated in several public build challenges (Squarespace, Envato, Flowstep).",
+    ],
+  },
+];
+
+const skillGroups = [
+  { label: "Medical / Clinical", items: "Medical terminology, ADR monitoring, patient safety, medication guidance" },
+  { label: "Research", items: "PubMed, Cochrane Library, Medscape, Google Scholar" },
+  { label: "Writing", items: "AI-assisted drafting, editing, evidence-based health content, patient-facing communication" },
+  { label: "Technical", items: "Wix, Lovable (no-code development), Gemini API, CMS platforms" },
+  { label: "Languages", items: "Romanian (native), English (professional working proficiency)" },
 ];
 
 const credentials = [
   {
-    title: "Pharmacy Assistant Diploma (Postliceală de Farmacie)",
-    institution: "Carol Davila University of Medicine and Pharmacy",
-    year: "2005",
-    icon: GraduationCap,
-    description: "Practical pharmaceutical training supporting 20+ years of hands-on experience in pharmacology, clinical safety, and pharmacy practice.",
-  },
-  {
-    title: "Engineering Degree",
-    institution: "USAMV",
+    title: "Engineering Degree — Food Service Engineering & Management / Agrotourism",
+    institution: "University of Agronomic Sciences and Veterinary Medicine of Bucharest (USAMV)",
     year: "2012",
     icon: Award,
-    description: "Technical and analytical foundation supporting medical device evaluation and regulatory systems.",
+    description: "Technical and analytical foundation from a five-year engineering programme.",
+  },
+  {
+    title: "Pharmacy Assistant Certificate (Nivel 3)",
+    institution: "Școala Sanitară Postliceală \"Carol Davila\", Bucharest — Romanian Ministry of Education and Research",
+    year: "January 2005",
+    icon: GraduationCap,
+    description: "Formal pharmacy technician qualification supporting 20 years of hands-on pharmacy practice in Romania.",
   },
 ];
 
@@ -74,22 +99,20 @@ export default function ExecutiveSummary() {
         <div className="flex-1 space-y-4">
           <div>
             <h2 className="font-display text-2xl font-semibold text-foreground">Ileana Mazilu</h2>
-            <p className="text-muted-foreground font-body mt-1">Senior Clinical Evaluation Medical Writer | Oncology & Medical Devices Specialist</p>
+            <p className="text-muted-foreground font-body mt-1">Medical & Health Content Writer</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary" className="clinical-badge">EU MDR Specialist</Badge>
-            <Badge variant="secondary" className="clinical-badge">Oncology</Badge>
-            <Badge variant="secondary" className="clinical-badge">Class III Devices</Badge>
-            <Badge variant="secondary" className="clinical-badge">ICH-GCP</Badge>
+            <Badge variant="secondary" className="clinical-badge">Pharmacy Technician (20 yrs)</Badge>
+            <Badge variant="secondary" className="clinical-badge">Health Content Writing</Badge>
+            <Badge variant="secondary" className="clinical-badge">ADR Monitoring</Badge>
+            <Badge variant="secondary" className="clinical-badge">EU MDR Self-Study</Badge>
           </div>
           <p className="text-sm text-foreground/80 leading-relaxed font-body max-w-2xl">
-            Senior Clinical Evaluation Medical Writer and Pharmacy Technician with over 20 years of practical experience
-            in the pharmaceutical sector, providing a deep understanding of pharmacology and clinical safety.
-            Over the last 3 years, I have specialized as a Medical Writer with a primary focus on Oncology and Clinical Evidence Appraisal,
-            authoring clinical evaluation reports (CERs), post-market clinical follow-up (PMCF) documentation,
-            and periodic safety update reports (PSURs). My career bridges decades of pharmaceutical expertise
-            with rigorous clinical evaluation standards, ensuring full compliance with EU MDR 2017/745
-            for high-risk medical devices.
+            Health and medical content writer with a 20-year clinical foundation as a pharmacy technician in Romania,
+            including hands-on experience with adverse drug reaction monitoring and patient-facing medication guidance.
+            Since transitioning toward writing, I've built a self-directed portfolio of health articles and taught
+            myself the fundamentals of pharmacovigilance and EU MDR regulatory concepts. Comfortable using AI tools
+            as part of a modern writing workflow, alongside independent research using PubMed, Cochrane, and Medscape.
           </p>
         </div>
       </div>
@@ -103,25 +126,46 @@ export default function ExecutiveSummary() {
           </div>
         ))}
       </div>
-      <p className="text-sm text-foreground/75 font-body italic text-center -mt-2">
-        20+ years of pharmacy experience, with 3 years specializing in medical writing and regulatory documentation (CER, PMCF, PSUR).
-      </p>
 
-      {/* Key Achievements */}
+      {/* Experience */}
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">1.1 Key Achievements</p>
+          <p className="report-label">1.1 Experience</p>
         </div>
-        <ul className="space-y-3">
-          {highlights.map((item, i) => (
-            <li key={i} className="flex items-start gap-3 text-sm font-body text-foreground/85 leading-relaxed">
-              <span className="w-5 h-5 rounded-full bg-accent flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-[10px] font-bold text-accent-foreground">{i + 1}</span>
-              </span>
-              {item}
-            </li>
+        <div className="space-y-6">
+          {experience.map((job) => (
+            <div key={job.role} className="space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
+                <h3 className="font-display text-base font-semibold text-foreground">
+                  {job.role} <span className="text-primary font-medium">— {job.org}</span>
+                </h3>
+                <span className="text-xs text-muted-foreground font-body">{job.period}</span>
+              </div>
+              <ul className="space-y-2 pl-1">
+                {job.bullets.map((b, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm font-body text-foreground/85 leading-relaxed">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0 mt-2" />
+                    {b}
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
-        </ul>
+        </div>
+      </div>
+
+      {/* Skills */}
+      <div className="report-section">
+        <div className="report-header">
+          <p className="report-label">1.2 Skills</p>
+        </div>
+        <div className="space-y-2">
+          {skillGroups.map((s) => (
+            <div key={s.label} className="text-sm font-body text-foreground/85 leading-relaxed">
+              <span className="font-semibold text-foreground">{s.label}:</span> {s.items}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Certifications & Credentials */}
