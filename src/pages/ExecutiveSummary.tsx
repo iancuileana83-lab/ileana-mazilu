@@ -171,7 +171,7 @@ export default function ExecutiveSummary() {
       {/* Certifications & Credentials */}
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">1.2 Certifications & Credentials</p>
+          <p className="report-label">1.3 Education</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {credentials.map((credential) => (
@@ -195,7 +195,7 @@ export default function ExecutiveSummary() {
       {/* Technical Portfolio & Evidence */}
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">1.3 Technical Portfolio & Evidence</p>
+          <p className="report-label">1.4 Technical Portfolio & Evidence</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -319,7 +319,7 @@ export default function ExecutiveSummary() {
       </div>
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">1.4 Contact & Resources</p>
+          <p className="report-label">1.5 Contact & Resources</p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-8">
@@ -366,7 +366,7 @@ export default function ExecutiveSummary() {
       {/* Client Testimonials */}
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">1.5 Client Testimonials</p>
+          <p className="report-label">1.6 Client Testimonials</p>
         </div>
         <div className="bg-muted/40 rounded-lg border border-dashed border-border p-8 text-center">
           <Quote className="w-8 h-8 text-primary/40 mx-auto mb-4" />
