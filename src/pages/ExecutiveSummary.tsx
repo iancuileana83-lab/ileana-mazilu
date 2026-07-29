@@ -377,24 +377,10 @@ export default function ExecutiveSummary() {
       </div>
 
       {/* Footer Disclaimer */}
-      <div className="border-t border-border pt-6 mt-4 space-y-4">
+      <div className="border-t border-border pt-6 mt-4">
         <p className="text-[11px] text-muted-foreground/70 font-body leading-relaxed text-center max-w-3xl mx-auto">
           © 2026 Ileana Mazilu. <span className="font-semibold">Confidentiality Notice:</span> All project samples and data presented in this portfolio have been anonymized or modified to protect proprietary information and comply with Non-Disclosure Agreements (NDAs) and GDPR standards. Full clinical details are available upon request during a secure interview process.
         </p>
-        <div className="flex justify-center">
-          <a
-            href="https://nicklaunches.com/products/medad-compliance-ai/?utm_source=ileana-mazilu.lovable.app&utm_medium=badge&utm_campaign=featured"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src="https://nicklaunches.com/badges/featured.png"
-              alt="MedAd Compliance AI on Nick Launches"
-              width={244}
-              height={56}
-            />
-          </a>
-        </div>
       </div>
     </div>
   );
