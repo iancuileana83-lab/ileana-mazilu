@@ -26,7 +26,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<ExecutiveSummary />} />
             <Route path="/evidence" element={<ClinicalEvidenceVault />} />
-            
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/services" element={<Services />} />
             <Route path="/highlights" element={<ProjectHighlights />} />
             <Route path="/medad-ai" element={<MedAdComplianceAI />} />
