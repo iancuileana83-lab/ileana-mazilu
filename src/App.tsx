@@ -6,11 +6,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/AppLayout";
 import ExecutiveSummary from "./pages/ExecutiveSummary";
 import ClinicalEvidenceVault from "./pages/ClinicalEvidenceVault";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 import Services from "./pages/Services";
 import ProjectHighlights from "./pages/ProjectHighlights";
 import MedAdComplianceAI from "./pages/MedAdComplianceAI";
 import NotFound from "./pages/NotFound";
+
 
 const queryClient = new QueryClient();
 
@@ -24,7 +26,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<ExecutiveSummary />} />
             <Route path="/evidence" element={<ClinicalEvidenceVault />} />
-            
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/services" element={<Services />} />
             <Route path="/highlights" element={<ProjectHighlights />} />
             <Route path="/medad-ai" element={<MedAdComplianceAI />} />
