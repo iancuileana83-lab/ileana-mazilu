@@ -11,7 +11,7 @@ import {
  * Se completează cu cheia "Public SDK Key" din RevenueCat Dashboard
  * (Project Settings → API Keys → app-ul Android). Nu este un secret.
  */
-const REVENUECAT_ANDROID_API_KEY = "goog_REPLACE_WITH_REVENUECAT_ANDROID_API_KEY";
+const REVENUECAT_ANDROID_API_KEY = "goog_ESwasGhWrmTvFWGjIEzbJHNAbyT";
 
 /** Entitlement-ul care marchează un abonament activ (configurat în RevenueCat). */
 export const PREMIUM_ENTITLEMENT_ID = "premium";
