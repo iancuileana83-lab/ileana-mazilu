@@ -113,11 +113,11 @@ export function useMedAdLite(): MedAdLiteState {
     setError(null);
     setLoading(true);
     const result = await purchasePackage(litePackage);
-    if (result.success) {
+    if (result.success === true) {
       const active = Boolean(result.customerInfo.entitlements.active?.[LITE_ENTITLEMENT_ID]);
       setIsLite(active);
       if (!active) setError("Abonamentul a fost înregistrat, dar accesul nu s-a activat încă. Încearcă „Restore”.");
-    } else if (!result.cancelled) {
+    } else if (result.cancelled === false) {
       setError(result.error);
     }
     setLoading(false);
@@ -128,7 +128,7 @@ export function useMedAdLite(): MedAdLiteState {
     setError(null);
     setLoading(true);
     const status = await restorePurchases();
-    setIsLite(status.entitlements.includes(LITE_ENTITLEMENT_ID));
+    setIsLite(status.activeEntitlements.includes(LITE_ENTITLEMENT_ID));
     if (status.error) setError(status.error);
     setLoading(false);
   }, [android]);
