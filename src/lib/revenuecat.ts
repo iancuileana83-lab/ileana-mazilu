@@ -150,3 +150,51 @@ export async function restorePurchases(): Promise<SubscriptionStatus> {
     };
   }
 }
+
+/* ------------------------------------------------------------------ *
+ * MedAd Lite ($29 / lună, Android only, Google Play Billing)
+ * Product id: medad_pro_monthly · Offering: "default"
+ * Entitlement: "medad_compliance_ai_pro"
+ * Nu afectează în niciun fel fluxurile web Stripe ($49 / $149).
+ * ------------------------------------------------------------------ */
+
+export const LITE_ENTITLEMENT_ID = "medad_compliance_ai_pro";
+export const LITE_OFFERING_ID = "default";
+export const LITE_PRODUCT_ID = "medad_pro_monthly";
+
+/** Limite specifice tier-ului MedAd Lite. */
+export const LITE_GENERATION_LIMIT = 15;
+export const LITE_VARIATIONS_PER_RUN = 1;
+
+/**
+ * Găsește pachetul lunar MedAd Lite din offering-ul "default".
+ * Returnează null pe web sau dacă offering-ul nu este disponibil.
+ */
+export async function getLiteMonthlyPackage(): Promise<PurchasesPackage | null> {
+  const offerings = await getOfferings();
+  if (!offerings) return null;
+
+  const offering = offerings.all?.[LITE_OFFERING_ID] ?? offerings.current ?? null;
+  if (!offering) return null;
+
+  const packages = offering.availablePackages ?? [];
+  return (
+    packages.find((p) => p.product?.identifier?.includes(LITE_PRODUCT_ID)) ??
+    packages.find((p) => p.identifier?.toLowerCase().includes("month")) ??
+    packages[0] ??
+    null
+  );
+}
+
+/** Verifică dacă entitlement-ul MedAd Lite este activ (restore la pornire). */
+export async function checkLiteEntitlement(): Promise<boolean> {
+  if (!isNativeAndroid()) return false;
+
+  try {
+    const { customerInfo } = await Purchases.getCustomerInfo();
+    return Boolean(customerInfo.entitlements.active?.[LITE_ENTITLEMENT_ID]);
+  } catch (error) {
+    console.error("checkLiteEntitlement failed:", error);
+    return false;
+  }
+}
