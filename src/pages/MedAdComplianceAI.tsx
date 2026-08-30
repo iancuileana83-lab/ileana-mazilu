@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown, Download, XCircle, FileText, Repeat, ClipboardCheck, Stethoscope, Mail } from "lucide-react";
+import { Lock, Smartphone, RotateCcw, Shield, Sparkles, ShieldCheck, Brain, Zap, FileWarning, CheckCircle2, AlertTriangle, Loader2, Crown, Download, XCircle, FileText, Repeat, ClipboardCheck, Stethoscope, Mail } from "lucide-react";
 import jsPDF from "jspdf";
+import { useMedAdLite } from "@/hooks/use-medad-lite";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,9 @@ import {
 } from "@/lib/cer-pmcf-generator";
 
 export default function MedAdComplianceAI() {
+  // Gating MedAd Lite — activ DOAR în aplicația nativă Android (RevenueCat).
+  // Pe web, isAndroid/isLite sunt false, deci planurile Stripe $49 / $149 rămân neschimbate.
+  const lite = useMedAdLite();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"outputs" | "audit" | "checklist">("outputs");
   const [category, setCategory] = useState("Oncology");
@@ -98,14 +102,15 @@ export default function MedAdComplianceAI() {
   };
 
   const handleGenerate = () => {
+    if (lite.atLimit) return;
     setLoading(true);
-    setReport(null);
     setTimeout(() => {
       const r = runAudit({ description, category, frameworks });
       setReport(r);
       setActiveTab("outputs");
       setLoading(false);
-    }, 2200);
+      lite.registerGeneration();
+    }, 1400);
   };
 
   const downloadAuditPDF = () => {
