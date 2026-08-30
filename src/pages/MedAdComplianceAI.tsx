@@ -104,13 +104,14 @@ export default function MedAdComplianceAI() {
   const handleGenerate = () => {
     if (lite.atLimit) return;
     setLoading(true);
+    setReport(null);
     setTimeout(() => {
       const r = runAudit({ description, category, frameworks });
       setReport(r);
       setActiveTab("outputs");
       setLoading(false);
       lite.registerGeneration();
-    }, 1400);
+    }, 2200);
   };
 
   const downloadAuditPDF = () => {
@@ -604,9 +605,25 @@ export default function MedAdComplianceAI() {
                 </div>
               </div>
 
+              {lite.isLite && (
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-cyan-400/25 bg-cyan-400/[0.06] px-4 py-3">
+                  <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-cyan-200">
+                    <Smartphone className="w-3.5 h-3.5" /> MedAd Lite
+                  </span>
+                  <span className="text-sm text-slate-200">
+                    {lite.used}/{lite.limit} generations used this month
+                  </span>
+                </div>
+              )}
+              {lite.atLimit && (
+                <div className="rounded-xl border border-amber-400/30 bg-amber-500/[0.08] px-4 py-3 text-sm text-amber-200">
+                  You have reached the MedAd Lite monthly limit of {lite.limit} generations.{" "}
+                  <a href="#pricing" className="underline font-semibold text-white">Upgrade to Starter</a> for 50 generations per month.
+                </div>
+              )}
               <button
                 onClick={handleGenerate}
-                disabled={loading}
+                disabled={loading || lite.atLimit}
                 className="mt-2 relative overflow-hidden rounded-xl py-4 px-6 font-semibold text-white bg-gradient-to-r from-cyan-500 via-cyan-400 to-purple-500 hover:from-cyan-400 hover:to-purple-400 transition shadow-[0_0_40px_-10px_rgba(34,211,238,0.6)] disabled:opacity-70"
               >
                 {loading ? (
@@ -670,12 +687,21 @@ export default function MedAdComplianceAI() {
                     <p className="text-xs uppercase tracking-widest text-emerald-300 mb-2">Final Compliant Ad Copy · Ready to Use</p>
                     <p className="text-slate-100 whitespace-pre-wrap leading-relaxed">{report.finalCompliantCopy}</p>
                   </div>
-                  {report.variants.map((v) => (
+                  {(lite.isLite ? report.variants.slice(0, 1) : report.variants).map((v) => (
                     <div key={v.platform} className={`rounded-xl border p-5 ${v.platform === "Google Ads" ? "border-purple-400/20 bg-purple-400/5" : "border-cyan-400/20 bg-cyan-400/5"}`}>
                       <p className={`text-xs uppercase tracking-widest mb-2 ${v.platform === "Google Ads" ? "text-purple-300" : "text-cyan-300"}`}>{v.label}</p>
                       <p className="text-slate-100 whitespace-pre-wrap">{v.content}</p>
                     </div>
                   ))}
+                  {lite.isLite && report.variants.length > 1 && (
+                    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5 flex items-start gap-3">
+                      <Lock className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-slate-300">
+                        MedAd Lite includes <span className="text-white font-semibold">1 safe variation per run</span>.{" "}
+                        <a href="#pricing" className="underline text-cyan-300">Upgrade to Starter</a> for 3 variations (2 Social Hooks + 1 Google Ad).
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -736,6 +762,15 @@ export default function MedAdComplianceAI() {
                 <div className="text-xs text-slate-400">
                   Audit generated {report.submittedAt.toLocaleString()} · Frameworks: {report.frameworks.join(", ") || "—"}
                 </div>
+                {lite.isLite ? (
+                  <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/15 bg-white/[0.04] text-sm text-slate-300">
+                    <Lock className="w-4 h-4 text-slate-400" />
+                    <span>
+                      Upgrade to Starter to unlock downloadable compliance reports ·{" "}
+                      <a href="#pricing" className="underline text-cyan-300 font-semibold">Upgrade</a>
+                    </span>
+                  </div>
+                ) : (
                 <button
                   onClick={downloadAuditPDF}
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white font-semibold text-sm shadow-[0_0_30px_-10px_rgba(34,211,238,0.6)] transition"
@@ -743,6 +778,7 @@ export default function MedAdComplianceAI() {
                   <Download className="w-4 h-4" />
                   Download Compliance Audit PDF
                 </button>
+                )}
               </div>
             </div>
           )}
