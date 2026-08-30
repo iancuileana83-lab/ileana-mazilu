@@ -797,6 +797,26 @@ export default function MedAdComplianceAI() {
             </p>
           </div>
 
+          {lite.isLite ? (
+            <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-10 text-center backdrop-blur">
+              <div className="mx-auto w-12 h-12 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center mb-5">
+                <Lock className="w-5 h-5 text-slate-300" />
+              </div>
+              <p className="text-xs uppercase tracking-[0.25em] text-cyan-300 mb-2">MedAd Lite · Locked</p>
+              <h3 className="font-display text-2xl text-white mb-3">CER / PMCF long-form draft generator</h3>
+              <p className="text-slate-400 max-w-2xl mx-auto text-sm leading-relaxed">
+                The 10-section Clinical Evaluation Report and 5-section PMCF plan generator is not included in MedAd Lite.
+                Preview: structured sections covering scope, state of the art, equivalence, benefit-risk analysis, PMS/PMCF
+                integration and evaluator qualification — each exported as a formatted PDF.
+              </p>
+              <a
+                href="#pricing"
+                className="inline-flex mt-7 items-center gap-2 px-8 py-3 rounded-full bg-cyan-500 hover:bg-cyan-400 text-[#05060f] font-semibold transition"
+              >
+                Upgrade to Starter
+              </a>
+            </div>
+          ) : (
           <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-8 md:p-10 backdrop-blur">
             {/* Mode switch */}
             <div className="flex gap-3 mb-8">
@@ -856,9 +876,10 @@ export default function MedAdComplianceAI() {
               )}
             </button>
           </div>
+          )}
 
           {/* Generated document viewer */}
-          {generatedDoc && (
+          {!lite.isLite && generatedDoc && (
             <div className="mt-10 rounded-3xl border border-white/10 bg-[#0a0d1e]/70 overflow-hidden animate-fade-in">
               <div className="px-6 py-3 bg-amber-500/10 border-b border-amber-400/30 text-amber-200 text-xs flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
@@ -940,7 +961,7 @@ export default function MedAdComplianceAI() {
         </section>
 
         {/* PRICING */}
-        <section className="relative px-6 md:px-12 py-20 max-w-6xl mx-auto">
+        <section id="pricing" className="relative px-6 md:px-12 py-20 max-w-6xl mx-auto">
           <div className="text-center mb-6">
             <h2 className="font-display text-3xl md:text-4xl font-semibold text-white mb-4">Protect Your Brand. Priced for Peace of Mind.</h2>
             <p className="text-slate-400 max-w-2xl mx-auto">Non-compliant medical advertising can result in significant regulatory fines and reputational damage. Credits reset automatically every 30 days.</p>
@@ -948,6 +969,53 @@ export default function MedAdComplianceAI() {
           <p className="text-center text-sm text-cyan-200/80 max-w-3xl mx-auto mb-10">
             Choose the plan that fits your compliance needs — <span className="text-white font-semibold">marketing compliance</span> (ad copy audit &amp; safe rewrites) is included in both plans; <span className="text-white font-semibold">regulatory documentation drafting</span> (CER / PMCF long-form generator) is available on both plans as an AI-assisted drafting tool requiring human expert review.
           </p>
+
+          {/* MedAd Lite — Android only (Google Play Billing via RevenueCat) */}
+          {lite.isAndroid && (
+            <div className="mb-6 rounded-2xl border border-slate-400/25 bg-white/[0.03] p-8 backdrop-blur">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-500/20 border border-slate-400/40 text-slate-200 text-[11px] uppercase tracking-widest mb-4">
+                <Smartphone className="w-3 h-3" /> Android app only · Entry tier
+              </div>
+              <p className="text-xs uppercase tracking-[0.25em] text-slate-300 mb-2">MedAd Lite</p>
+              <h3 className="font-display text-2xl text-white mb-2">Essential Ad Compliance Checks</h3>
+              <p className="text-4xl font-semibold text-white mb-6">
+                {lite.priceString ?? "$29"} <span className="text-base font-normal text-slate-400">/ month</span>
+              </p>
+              <ul className="space-y-3 text-sm text-slate-300 mb-8">
+                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-slate-300 flex-shrink-0 mt-0.5" />15 Compliant Ad Generations per month</li>
+                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-slate-300 flex-shrink-0 mt-0.5" />1 Safe Variation per run</li>
+                <li className="flex gap-2 text-slate-500"><Lock className="w-4 h-4 flex-shrink-0 mt-0.5" />No downloadable PDF compliance &amp; safety audit reports</li>
+                <li className="flex gap-2 text-slate-500"><Lock className="w-4 h-4 flex-shrink-0 mt-0.5" />No CER / PMCF long-form draft generator</li>
+              </ul>
+              {lite.isLite ? (
+                <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/[0.07] px-4 py-3 text-sm text-emerald-200 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4" /> MedAd Lite active — {lite.used}/{lite.limit} generations used this month
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={lite.buyLite}
+                    disabled={lite.loading || !lite.litePackage}
+                    className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-200 hover:bg-white text-[#05060f] font-semibold transition disabled:opacity-50"
+                  >
+                    {lite.loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                    Subscribe to MedAd Lite
+                  </button>
+                  <button
+                    onClick={lite.restore}
+                    disabled={lite.loading}
+                    className="inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl border border-white/15 text-slate-200 text-sm hover:bg-white/[0.05] transition disabled:opacity-50"
+                  >
+                    <RotateCcw className="w-4 h-4" /> Restore purchases
+                  </button>
+                </div>
+              )}
+              {lite.error && <p className="mt-3 text-xs text-amber-300">{lite.error}</p>}
+              <p className="mt-3 text-xs text-slate-500">
+                Billed through Google Play. MedAd Lite is an entry tier — upgrade to Starter for full audit PDFs and the CER / PMCF generator.
+              </p>
+            </div>
+          )}
 
           <div className="grid md:grid-cols-2 gap-6">
             {/* Starter */}
