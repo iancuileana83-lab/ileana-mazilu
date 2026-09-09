@@ -17,6 +17,7 @@ const navItems = [
   { title: "Clinical Evidence Vault", url: "/evidence", icon: FileText },
   { title: "Services", url: "/services", icon: Briefcase },
   { title: "Project Highlights", url: "/highlights", icon: FolderOpen },
+  { title: "AI Projects", url: "/ai-projects", icon: Sparkles },
   { title: "MedAd Compliance AI", url: "/medad-ai", icon: Sparkles },
 ];
 
