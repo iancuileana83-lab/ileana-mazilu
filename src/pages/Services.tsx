@@ -45,7 +45,7 @@ export default function Services() {
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="report-header">
-        <p className="report-label">Section 4.0</p>
+        <p className="report-label">Section 3.0</p>
         <h1 className="report-title font-display text-3xl">Services</h1>
       </div>
 

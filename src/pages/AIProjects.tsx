@@ -117,7 +117,7 @@ export default function AIProjects() {
     <div className="space-y-10 animate-fade-in">
       {/* Page header */}
       <div className="report-header">
-        <p className="report-label">Section 6.0</p>
+        <p className="report-label">Section 5.0</p>
         <h1 className="report-title font-display text-3xl">AI Projects Portfolio</h1>
       </div>
 

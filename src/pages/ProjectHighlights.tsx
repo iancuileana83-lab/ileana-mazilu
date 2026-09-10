@@ -42,7 +42,7 @@ export default function ProjectHighlights() {
     <div className="space-y-10 animate-fade-in">
       {/* Page header */}
       <div className="report-header">
-        <p className="report-label">Section 5.0</p>
+        <p className="report-label">Section 4.0</p>
         <h1 className="report-title font-display text-3xl">Project Highlights</h1>
       </div>
 
