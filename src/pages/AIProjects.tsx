@@ -132,7 +132,7 @@ export default function AIProjects() {
       {/* ---- Healthcare & Regulatory AI ---- */}
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">6.1 Healthcare & Regulatory AI</p>
+          <p className="report-label">5.1 Healthcare & Regulatory AI</p>
           <h2 className="report-title font-display text-xl">Applied AI for Compliance & Clinical Workflows</h2>
         </div>
         <div className="flex flex-col gap-6 mt-4">
@@ -145,7 +145,7 @@ export default function AIProjects() {
       {/* ---- Agentic & Dev Tools ---- */}
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">6.2 Agentic & Dev Tools</p>
+          <p className="report-label">5.2 Agentic & Dev Tools</p>
           <h2 className="report-title font-display text-xl">Automation Beyond Healthcare</h2>
         </div>
         <div className="flex flex-col gap-6 mt-4">
@@ -158,7 +158,7 @@ export default function AIProjects() {
       {/* ---- Web3 & Other ---- */}
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">6.3 Web3 & Other</p>
+          <p className="report-label">5.3 Web3 & Other</p>
           <h2 className="report-title font-display text-xl">Exploring Adjacent Domains</h2>
         </div>
         <div className="flex flex-col gap-6 mt-4">

@@ -49,7 +49,7 @@ export default function ProjectHighlights() {
       {/* ---- Therapeutic Footprint ---- */}
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">5.1 Therapeutic Footprint</p>
+          <p className="report-label">4.1 Therapeutic Footprint</p>
           <h2 className="report-title font-display text-xl">Therapeutic Versatility: A Multi-Disciplinary Approach</h2>
         </div>
         <p className="text-sm text-foreground/80 leading-relaxed font-body mb-6 max-w-3xl">
@@ -75,7 +75,7 @@ export default function ProjectHighlights() {
       {/* ---- Illustrative Regulatory Workflow ---- */}
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">5.2 Illustrative Regulatory Workflow</p>
+          <p className="report-label">4.2 Illustrative Regulatory Workflow</p>
           <h2 className="report-title font-display text-xl">From Clinical Evaluation Plan to Market Approval</h2>
         </div>
         <div className="space-y-4 text-sm text-foreground/85 leading-relaxed font-body max-w-3xl">
@@ -105,7 +105,7 @@ export default function ProjectHighlights() {
       {/* ---- Pharma Synergy Article ---- */}
       <div className="report-section">
         <div className="report-header">
-          <p className="report-label">5.3 Perspective</p>
+          <p className="report-label">4.3 Perspective</p>
           <h2 className="report-title font-display text-xl">The Synergy Between Pharmaceutical Expertise and Medical Device Safety</h2>
         </div>
         <div className="space-y-4 text-sm text-foreground/85 leading-relaxed font-body max-w-3xl">
