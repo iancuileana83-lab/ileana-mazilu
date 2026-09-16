@@ -1145,6 +1145,18 @@ export default function MedAdComplianceAI() {
               </div>
             </div>
           </div>
+          {lite.isAndroid && (
+            <div className="text-center mb-6">
+              <a
+                href="https://play.google.com/store/apps/details?id=com.ileanamazilu.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyan-400/30 bg-cyan-400/5 text-cyan-300 text-sm hover:bg-cyan-400/10 transition"
+              >
+                ⭐ Enjoying MedAd Compliance AI? Rate us on Google Play
+              </a>
+            </div>
+          )}
           <p className="text-center text-[11px] text-slate-500 max-w-3xl mx-auto mt-8 italic">
             All content produced by MedAd Compliance AI — ad copy audits and CER/PMCF drafts — is an AI-generated draft that requires human expert review and validation before use in regulatory submissions, patient-facing communications, or paid advertising. No claim of certified FDA or EU MDR compliance outcomes is made.
           </p>
