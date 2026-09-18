@@ -36,7 +36,7 @@ const healthcareProjects = [
     status: "Phase I idea pitch submitted to the Blaise xTech Competition (Forward Edge-AI); functional demo app built and deployed.",
     link: "https://ramanguard.vercel.app",
     linkLabel: "View live demo",
-  }
+  },
   {
     name: "ClinicalMatch AI — Trial Matching Dashboard",
     problem: "Matching patients to relevant clinical trials is manual and fragmented.",
