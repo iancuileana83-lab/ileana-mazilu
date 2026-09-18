@@ -29,6 +29,14 @@ const healthcareProjects = [
     link: "https://github.com/iancuileana83-lab/rxtrack-agent-adk",
     linkLabel: "View on GitHub",
   },
+    {
+    name: "RamanGuard — AI Counterfeit Drug Detector",
+    problem: "Counterfeit and substandard medicines cause an estimated 1 million deaths annually, with no fast, portable way to verify authenticity at the point of care.",
+    solution: "An AI-powered mobile app concept pairing the Blaise handheld Raman spectrometer with machine learning to instantly flag counterfeit or degraded medication.",
+    status: "Phase I idea pitch submitted to the Blaise xTech Competition (Forward Edge-AI); functional demo app built and deployed.",
+    link: "https://ramanguard.vercel.app",
+    linkLabel: "View live demo",
+  }
   {
     name: "ClinicalMatch AI — Trial Matching Dashboard",
     problem: "Matching patients to relevant clinical trials is manual and fragmented.",
