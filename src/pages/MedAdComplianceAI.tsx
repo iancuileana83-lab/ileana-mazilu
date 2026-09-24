@@ -22,10 +22,9 @@ import {
   type DeviceClass,
   type EvaluationRoute,
 } from "@/lib/cer-pmcf-generator";
+import OnboardingTour from "@/components/OnboardingTour";
 
 export default function MedAdComplianceAI() {
-  // Gating MedAd Lite — activ DOAR în aplicația nativă Android (RevenueCat).
-  // Pe web, isAndroid/isLite sunt false, deci planurile Stripe $49 / $149 rămân neschimbate.
   const lite = useMedAdLite();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"outputs" | "audit" | "checklist">("outputs");
@@ -34,7 +33,6 @@ export default function MedAdComplianceAI() {
   const [frameworks, setFrameworks] = useState<string[]>(["FDA Advertising Guidelines"]);
   const [report, setReport] = useState<AuditReport | null>(null);
 
-  // Long-form CER / PMCF regulatory-doc generator state
   const [docMode, setDocMode] = useState<"CER" | "PMCF">("CER");
   const [docLoading, setDocLoading] = useState(false);
   const [generatedDoc, setGeneratedDoc] = useState<GeneratedDocument | null>(null);
@@ -67,7 +65,6 @@ export default function MedAdComplianceAI() {
     cerReference: "",
   });
 
-  // Consultation request modal state
   const [consultOpen, setConsultOpen] = useState(false);
   const [consultName, setConsultName] = useState("");
   const [consultEmail, setConsultEmail] = useState("");
@@ -154,7 +151,6 @@ export default function MedAdComplianceAI() {
       });
     };
 
-    // Header bar
     doc.setFillColor(15, 23, 42);
     doc.rect(0, 0, pageWidth, 70, "F");
     doc.setTextColor(255, 255, 255);
@@ -167,7 +163,6 @@ export default function MedAdComplianceAI() {
     doc.text("Regulatory Audit Report", margin, 50);
     y = 90;
 
-    // Prominent draft disclaimer banner
     doc.setFillColor(254, 243, 199);
     doc.rect(margin, y, maxWidth, 40, "F");
     doc.setDrawColor(217, 119, 6);
@@ -186,7 +181,6 @@ export default function MedAdComplianceAI() {
     );
     y += 56;
 
-    // Metadata
     drawSectionHeader("Audit Metadata");
     const meta: [string, string][] = [
       ["Date / Time:", report.submittedAt.toLocaleString()],
@@ -204,7 +198,6 @@ export default function MedAdComplianceAI() {
       y += 14 * lines.length + 2;
     });
 
-    // Executive summary
     y += 10;
     drawSectionHeader("Executive Summary");
     const critical = report.findings.filter((f) => f.severity === "Critical").length;
@@ -218,12 +211,10 @@ export default function MedAdComplianceAI() {
     ];
     summary.forEach((line) => drawParagraph(line));
 
-    // Original submitted text
     y += 10;
     drawSectionHeader("Original Submitted Text");
     drawParagraph(report.original);
 
-    // Flagged phrases
     y += 10;
     drawSectionHeader("Flagged Phrases — Severity, Regulation, Reason & Rewrite");
     if (report.findings.length === 0) {
@@ -241,7 +232,7 @@ export default function MedAdComplianceAI() {
         doc.text("Regulation:", margin + 12, y);
         doc.setFont("helvetica", "normal");
         drawParagraph(f.regulation, 90, [30, 41, 59]);
-        y -= 14; // drawParagraph advances; keep alignment consistent
+        y -= 14;
         y += 14;
         doc.setFont("helvetica", "bold");
         doc.setTextColor(71, 85, 105);
@@ -259,12 +250,10 @@ export default function MedAdComplianceAI() {
       });
     }
 
-    // Final compliant ad copy
     y += 6;
     drawSectionHeader("Final Compliant Ad Copy (Ready to Use)");
     drawParagraph(report.finalCompliantCopy, 0, [15, 23, 42]);
 
-    // Platform-specific variants
     y += 10;
     drawSectionHeader("Platform-Specific Variants");
     report.variants.forEach((v) => {
@@ -278,7 +267,6 @@ export default function MedAdComplianceAI() {
       y += 6;
     });
 
-    // Compliance checklist
     y += 6;
     drawSectionHeader("Compliance Checklist — All Criteria Reviewed");
     report.checklist.forEach((c) => {
@@ -302,7 +290,6 @@ export default function MedAdComplianceAI() {
       y += 4;
     });
 
-    // Footer on each page
     const pages = doc.getNumberOfPages();
     for (let p = 1; p <= pages; p++) {
       doc.setPage(p);
@@ -321,7 +308,6 @@ export default function MedAdComplianceAI() {
     doc.save(`MedAd-Compliance-Audit-${Date.now()}.pdf`);
   };
 
-  // ---- Long-form regulatory document generation ----
   const handleGenerateDoc = () => {
     setDocLoading(true);
     setGeneratedDoc(null);
@@ -360,7 +346,6 @@ export default function MedAdComplianceAI() {
       });
     };
 
-    // Cover header bar
     doc.setFillColor(15, 23, 42);
     doc.rect(0, 0, pageWidth, 90, "F");
     doc.setTextColor(255, 255, 255);
@@ -374,7 +359,6 @@ export default function MedAdComplianceAI() {
     doc.text(`Generated ${generatedDoc.generatedAt.toLocaleString()}`, margin, 78);
     y = 120;
 
-    // Prominent draft disclaimer banner
     doc.setFillColor(254, 243, 199);
     doc.rect(margin, y, maxWidth, 44, "F");
     doc.setDrawColor(217, 119, 6);
@@ -393,7 +377,6 @@ export default function MedAdComplianceAI() {
     );
     y += 60;
 
-    // Metadata block
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
     doc.setTextColor(30, 41, 59);
@@ -416,7 +399,6 @@ export default function MedAdComplianceAI() {
 
     y += 8;
 
-    // Sections
     generatedDoc.sections.forEach((s) => {
       ensureSpace(40);
       doc.setFont("helvetica", "bold");
@@ -434,7 +416,6 @@ export default function MedAdComplianceAI() {
       y += 8;
     });
 
-    // Footer
     const pages = doc.getNumberOfPages();
     for (let p = 1; p <= pages; p++) {
       doc.setPage(p);
@@ -453,10 +434,9 @@ export default function MedAdComplianceAI() {
     doc.save(`${generatedDoc.type}-${generatedDoc.title.replace(/[^A-Za-z0-9]+/g, "-")}-${Date.now()}.pdf`);
   };
 
-
   return (
     <div className="min-h-screen -m-6 md:-m-10 bg-[#05060f] text-slate-100 font-body">
-      {/* Ambient gradient bg */}
+      <OnboardingTour />
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full bg-cyan-500/10 blur-3xl" />
@@ -464,7 +444,6 @@ export default function MedAdComplianceAI() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#05060f_80%)]" />
         </div>
 
-        {/* HERO */}
         <section className="relative px-6 md:px-12 pt-16 pb-20 max-w-6xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-400/30 bg-cyan-400/5 text-cyan-300 text-xs uppercase tracking-[0.25em] mb-6">
             <Sparkles className="w-3.5 h-3.5" /> Gemini-Powered · Regulatory Grade
@@ -477,7 +456,6 @@ export default function MedAdComplianceAI() {
           </p>
         </section>
 
-        {/* WHY NOT JUST CHATGPT */}
         <section className="relative px-6 md:px-12 py-16 max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-xs uppercase tracking-[0.3em] text-purple-300/80 mb-3">Direct Comparison</p>
@@ -526,8 +504,6 @@ export default function MedAdComplianceAI() {
           </div>
         </section>
 
-
-        {/* WHY MEDAD */}
         <section className="relative px-6 md:px-12 py-16 max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-xs uppercase tracking-[0.3em] text-cyan-400/80 mb-3">Value Justification</p>
@@ -554,7 +530,6 @@ export default function MedAdComplianceAI() {
           </div>
         </section>
 
-        {/* DEMO FORM */}
         <section className="relative px-6 md:px-12 py-16 max-w-5xl mx-auto">
           <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-8 md:p-10 backdrop-blur">
             <div className="flex items-center gap-3 mb-8">
@@ -638,14 +613,12 @@ export default function MedAdComplianceAI() {
             </div>
           </div>
 
-          {/* RESULTS */}
           {report && (
             <div className="mt-10 rounded-3xl border border-white/10 bg-[#0a0d1e]/70 overflow-hidden animate-fade-in">
               <div className="px-6 py-3 bg-amber-500/10 border-b border-amber-400/30 text-amber-200 text-xs flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <span><span className="font-semibold">AI-generated draft.</span> Requires human expert review and validation before publication or regulatory use. No guaranteed FDA/EU MDR compliance outcome is implied.</span>
               </div>
-              {/* Executive summary strip */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5">
                 {[
                   { label: "Rules evaluated", value: report.phrasesChecked, color: "text-slate-200" },
@@ -784,8 +757,6 @@ export default function MedAdComplianceAI() {
           )}
         </section>
 
-
-        {/* LONG-FORM REGULATORY DOC GENERATOR (CER / PMCF) */}
         <section className="relative px-6 md:px-12 py-16 max-w-6xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-xs uppercase tracking-[0.3em] text-purple-300/80 mb-3">Regulatory Documentation Engine</p>
@@ -809,16 +780,12 @@ export default function MedAdComplianceAI() {
                 Preview: structured sections covering scope, state of the art, equivalence, benefit-risk analysis, PMS/PMCF
                 integration and evaluator qualification — each exported as a formatted PDF.
               </p>
-              <a
-                href="#pricing"
-                className="inline-flex mt-7 items-center gap-2 px-8 py-3 rounded-full bg-cyan-500 hover:bg-cyan-400 text-[#05060f] font-semibold transition"
-              >
+              <a href="#pricing" className="inline-flex mt-7 items-center gap-2 px-8 py-3 rounded-full bg-cyan-500 hover:bg-cyan-400 text-[#05060f] font-semibold transition">
                 Upgrade to Starter
               </a>
             </div>
           ) : (
           <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-8 md:p-10 backdrop-blur">
-            {/* Mode switch */}
             <div className="flex gap-3 mb-8">
               {(["CER", "PMCF"] as const).map((m) => (
                 <button
@@ -862,6 +829,7 @@ export default function MedAdComplianceAI() {
             )}
 
             <button
+              id="tour-cer-generator"
               onClick={handleGenerateDoc}
               disabled={docLoading || (docMode === "CER" ? !cerInputs.deviceName || !cerInputs.intendedPurpose : !pmcfInputs.deviceName || !pmcfInputs.intendedPurpose)}
               className="mt-8 w-full relative overflow-hidden rounded-xl py-4 px-6 font-semibold text-white bg-gradient-to-r from-purple-500 via-cyan-400 to-cyan-500 hover:from-purple-400 hover:to-cyan-400 transition shadow-[0_0_40px_-10px_rgba(168,85,247,0.6)] disabled:opacity-50 disabled:cursor-not-allowed"
@@ -878,7 +846,6 @@ export default function MedAdComplianceAI() {
           </div>
           )}
 
-          {/* Generated document viewer */}
           {!lite.isLite && generatedDoc && (
             <div className="mt-10 rounded-3xl border border-white/10 bg-[#0a0d1e]/70 overflow-hidden animate-fade-in">
               <div className="px-6 py-3 bg-amber-500/10 border-b border-amber-400/30 text-amber-200 text-xs flex items-start gap-2">
@@ -892,7 +859,6 @@ export default function MedAdComplianceAI() {
               </div>
 
               <div className="grid md:grid-cols-[260px_1fr]">
-                {/* Section nav */}
                 <aside className="border-b md:border-b-0 md:border-r border-white/10 bg-[#05060f]/60 p-3 max-h-[560px] overflow-y-auto">
                   {generatedDoc.sections.map((s, idx) => (
                     <button
@@ -906,7 +872,6 @@ export default function MedAdComplianceAI() {
                   ))}
                 </aside>
 
-                {/* Section content */}
                 <div className="p-6 md:p-10 max-h-[560px] overflow-y-auto">
                   {(() => {
                     const s = generatedDoc.sections[activeDocSection];
@@ -941,8 +906,6 @@ export default function MedAdComplianceAI() {
           )}
         </section>
 
-
-        {/* CTA */}
         <section className="relative px-6 md:px-12 py-16 max-w-5xl mx-auto">
           <div className="rounded-3xl p-[1px] bg-gradient-to-r from-cyan-500 via-purple-500 to-cyan-500">
             <div className="rounded-3xl bg-[#05060f] p-10 md:p-12 text-center">
@@ -950,17 +913,13 @@ export default function MedAdComplianceAI() {
               <p className="text-lg md:text-xl text-slate-200 max-w-3xl mx-auto leading-relaxed">
                 Need an advanced clinical study adapted or a custom enterprise compliance framework? <span className="text-white font-semibold">Book a dedicated validation session with Ileana Mazilu</span> <span className="text-slate-400">(Senior Medical Writer & AI Subject Matter Expert).</span>
               </p>
-              <a
-                href="mailto:maziluileana88@gmail.com?subject=Enterprise Validation Session Request"
-                className="inline-flex mt-8 items-center gap-2 px-8 py-3 rounded-full bg-white text-[#05060f] font-semibold hover:bg-cyan-100 transition"
-              >
+              <a href="mailto:maziluileana88@gmail.com?subject=Enterprise Validation Session Request" className="inline-flex mt-8 items-center gap-2 px-8 py-3 rounded-full bg-white text-[#05060f] font-semibold hover:bg-cyan-100 transition">
                 Book Validation Session
               </a>
             </div>
           </div>
         </section>
 
-        {/* PRICING */}
         <section id="pricing" className="relative px-6 md:px-12 py-20 max-w-6xl mx-auto">
           <div className="text-center mb-6">
             <h2 className="font-display text-3xl md:text-4xl font-semibold text-white mb-4">Protect Your Brand. Priced for Peace of Mind.</h2>
@@ -970,9 +929,8 @@ export default function MedAdComplianceAI() {
             Choose the plan that fits your compliance needs — <span className="text-white font-semibold">marketing compliance</span> (ad copy audit &amp; safe rewrites) is included in both plans; <span className="text-white font-semibold">regulatory documentation drafting</span> (CER / PMCF long-form generator) is available on both plans as an AI-assisted drafting tool requiring human expert review.
           </p>
 
-          {/* MedAd Lite — Android only (Google Play Billing via RevenueCat) */}
           {lite.isAndroid && (
-            <div className="mb-6 rounded-2xl border border-slate-400/25 bg-white/[0.03] p-8 backdrop-blur">
+            <div id="tour-pricing-lite" className="mb-6 rounded-2xl border border-slate-400/25 bg-white/[0.03] p-8 backdrop-blur">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-500/20 border border-slate-400/40 text-slate-200 text-[11px] uppercase tracking-widest mb-4">
                 <Smartphone className="w-3 h-3" /> Android app only · Entry tier
               </div>
@@ -1018,7 +976,6 @@ export default function MedAdComplianceAI() {
           )}
 
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Starter */}
             <div className="rounded-2xl border border-cyan-400/20 bg-gradient-to-b from-cyan-500/[0.05] to-transparent p-8 backdrop-blur">
               <p className="text-xs uppercase tracking-[0.25em] text-cyan-300 mb-2">Starter Plan · For Clinics</p>
               <h3 className="font-display text-2xl text-white mb-2">Marketing Compliance Essentials</h3>
@@ -1034,18 +991,12 @@ export default function MedAdComplianceAI() {
               <ul className="space-y-3 text-sm text-slate-300 mb-8">
                 <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-300 flex-shrink-0 mt-0.5" />Access to CER / PMCF long-form draft generator (AI-assisted drafts; human expert review required)</li>
               </ul>
-              <a
-                href="https://buy.stripe.com/6oU9ASfwKfSdd9Sa701wY00"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-center py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-[#05060f] font-semibold transition"
-              >
+              <a href="https://buy.stripe.com/6oU9ASfwKfSdd9Sa701wY00" target="_blank" rel="noopener noreferrer" className="block text-center py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-[#05060f] font-semibold transition">
                 Upgrade to Starter
               </a>
             </div>
 
-            {/* Agency */}
-            <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-purple-500 via-cyan-400 to-purple-500">
+            <div id="tour-pricing-pro" className="relative rounded-2xl p-[1px] bg-gradient-to-br from-purple-500 via-cyan-400 to-purple-500">
               <div className="rounded-2xl bg-[#0a0d1e] p-8 h-full">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/40 text-purple-200 text-[11px] uppercase tracking-widest mb-4">
                   <Crown className="w-3 h-3" /> Best for Agencies &amp; Enterprise
@@ -1134,12 +1085,7 @@ export default function MedAdComplianceAI() {
                   </Dialog>
                 </div>
 
-                <a
-                  href="https://buy.stripe.com/aFa3cuesG49vedW7YS1wY01"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-center py-3 rounded-xl bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-400 hover:to-cyan-400 text-white font-semibold transition"
-                >
+                <a href="https://buy.stripe.com/aFa3cuesG49vedW7YS1wY01" target="_blank" rel="noopener noreferrer" className="block text-center py-3 rounded-xl bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-400 hover:to-cyan-400 text-white font-semibold transition">
                   Activate Agency License
                 </a>
               </div>
@@ -1147,12 +1093,7 @@ export default function MedAdComplianceAI() {
           </div>
           {lite.isAndroid && (
             <div className="text-center mb-6">
-              <a
-                href="https://play.google.com/store/apps/details?id=com.ileanamazilu.app"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyan-400/30 bg-cyan-400/5 text-cyan-300 text-sm hover:bg-cyan-400/10 transition"
-              >
+              <a href="https://play.google.com/store/apps/details?id=com.ileanamazilu.app" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyan-400/30 bg-cyan-400/5 text-cyan-300 text-sm hover:bg-cyan-400/10 transition">
                 ⭐ Enjoying MedAd Compliance AI? Rate us on Google Play
               </a>
             </div>
@@ -1166,7 +1107,6 @@ export default function MedAdComplianceAI() {
   );
 }
 
-// -- Reusable input components for the CER / PMCF console --
 interface FieldBaseProps {
   label: string;
   value: string;
@@ -1230,4 +1170,3 @@ function FieldSelect({ label, value, onChange, options, className = "" }: FieldS
     </div>
   );
 }
-
