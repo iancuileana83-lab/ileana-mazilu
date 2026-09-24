@@ -9,18 +9,18 @@ interface TourStep {
 const STEPS: TourStep[] = [
   {
     targetId: "tour-cer-generator",
-    title: "Generează documente CER/PMCF",
-    description: "Apasă aici pentru a genera un draft de document CER sau PMCF în câteva secunde, pe baza informațiilor introduse.",
+    title: "Generate CER/PMCF documents",
+    description: "Tap here to generate a draft CER or PMCF document in seconds, based on the information you enter.",
   },
   {
     targetId: "tour-pricing-lite",
-    title: "Planul Lite",
-    description: "Include 15 generări de reclame pe lună, o singură variantă, fără rapoarte PDF și fără generator CER/PMCF.",
+    title: "Lite plan",
+    description: "Includes 15 ad generations per month, a single variation, no PDF reports and no CER/PMCF generator.",
   },
   {
     targetId: "tour-pricing-pro",
-    title: "Planul Pro",
-    description: "Deblochează generatorul complet CER/PMCF, rapoarte PDF și variante multiple — ideal pentru uz profesional regulat.",
+    title: "Pro plan",
+    description: "Unlocks the full CER/PMCF generator, PDF reports and multiple variations — ideal for regular professional use.",
   },
 ];
 
@@ -94,17 +94,17 @@ export default function OnboardingTour() {
           boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
         }}
       >
-        <h3 style={{ margin: "0 0 8px", fontSize: 16, fontWeight: 700 }}>{step.title}</h3>
+        <h3 style={{ margin: "0 0 8px", fontSize: 16, fontWeight: 700, color: "#111" }}>{step.title}</h3>
         <p style={{ margin: "0 0 16px", fontSize: 14, color: "#444" }}>{step.description}</p>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <button onClick={finish} style={{ background: "none", border: "none", color: "#888", fontSize: 14 }}>
-            Sari peste
+            Skip
           </button>
           <button
             onClick={next}
             style={{ background: "#2563eb", color: "white", border: "none", borderRadius: 6, padding: "8px 16px", fontSize: 14, fontWeight: 600 }}
           >
-            {stepIndex + 1 >= STEPS.length ? "Am înțeles" : "Următor"}
+            {stepIndex + 1 >= STEPS.length ? "Got it" : "Next"}
           </button>
         </div>
       </div>
