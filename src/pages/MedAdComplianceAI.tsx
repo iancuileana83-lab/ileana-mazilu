@@ -976,7 +976,7 @@ export default function MedAdComplianceAI() {
           )}
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="rounded-2xl border border-cyan-400/20 bg-gradient-to-b from-cyan-500/[0.05] to-transparent p-8 backdrop-blur">
+            <div id="tour-pricing-starter" className="rounded-2xl border border-cyan-400/20 bg-gradient-to-b from-cyan-500/[0.05] to-transparent p-8 backdrop-blur">
               <p className="text-xs uppercase tracking-[0.25em] text-cyan-300 mb-2">Starter Plan · For Clinics</p>
               <h3 className="font-display text-2xl text-white mb-2">Marketing Compliance Essentials</h3>
               <p className="text-4xl font-semibold text-white mb-6">$49 <span className="text-base font-normal text-slate-400">/ month</span></p>

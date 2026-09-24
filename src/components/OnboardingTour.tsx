@@ -1,3 +1,4 @@
+import { Capacitor } from "@capacitor/core";
 import { useEffect, useState } from "react";
 
 interface TourStep {
@@ -6,23 +7,7 @@ interface TourStep {
   description: string;
 }
 
-const STEPS: TourStep[] = [
-  {
-    targetId: "tour-cer-generator",
-    title: "Generate CER/PMCF documents",
-    description: "Tap here to generate a draft CER or PMCF document in seconds, based on the information you enter.",
-  },
-  {
-    targetId: "tour-pricing-lite",
-    title: "Lite plan",
-    description: "Includes 15 ad generations per month, a single variation, no PDF reports and no CER/PMCF generator.",
-  },
-  {
-    targetId: "tour-pricing-pro",
-    title: "Pro plan",
-    description: "Unlocks the full CER/PMCF generator, PDF reports and multiple variations — ideal for regular professional use.",
-  },
-];
+const WEB_STEPS: TourStep[] = [{ targetId: "tour-cer-generator", title: "Generate CER/PMCF documents", description: "Tap here to generate a draft CER or PMCF document in seconds, based on the information you enter." }, { targetId: "tour-pricing-starter", title: "Starter plan", description: "50 compliant ad generations per month, 3 safe variations per run and downloadable PDF compliance reports." }, { targetId: "tour-pricing-pro", title: "Agency Premium", description: "250 advanced ad audit generations per month and white-label PDF export — built for agencies and enterprise." }]; const ANDROID_STEPS: TourStep[] = [{ targetId: "tour-cer-generator", title: "Generate CER/PMCF documents", description: "Tap here to generate a draft CER or PMCF document in seconds, based on the information you enter." }, { targetId: "tour-pricing-lite", title: "MedAd Lite", description: "Includes 15 ad generations per month, a single variation, no PDF reports and no CER/PMCF generator." }]; const STEPS: TourStep[] = Capacitor.getPlatform() === "android" ? ANDROID_STEPS : WEB_STEPS;
 
 const STORAGE_KEY = "medad_onboarding_seen";
 
