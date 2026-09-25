@@ -593,7 +593,7 @@ export default function MedAdComplianceAI() {
               {lite.atLimit && (
                 <div className="rounded-xl border border-amber-400/30 bg-amber-500/[0.08] px-4 py-3 text-sm text-amber-200">
                   You have reached the MedAd Lite monthly limit of {lite.limit} generations.{" "}
-                  <a href="#pricing" className="underline font-semibold text-white">Upgrade to Starter</a> for 50 generations per month.
+                  Your limit resets at the start of next month.
                 </div>
               )}
               <button
@@ -671,7 +671,7 @@ export default function MedAdComplianceAI() {
                       <Lock className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" />
                       <p className="text-sm text-slate-300">
                         MedAd Lite includes <span className="text-white font-semibold">1 safe variation per run</span>.{" "}
-                        <a href="#pricing" className="underline text-cyan-300">Upgrade to Starter</a> for 3 variations (2 Social Hooks + 1 Google Ad).
+                        
                       </p>
                     </div>
                   )}
@@ -739,8 +739,8 @@ export default function MedAdComplianceAI() {
                   <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/15 bg-white/[0.04] text-sm text-slate-300">
                     <Lock className="w-4 h-4 text-slate-400" />
                     <span>
-                      Upgrade to Starter to unlock downloadable compliance reports ·{" "}
-                      <a href="#pricing" className="underline text-cyan-300 font-semibold">Upgrade</a>
+                      PDF compliance reports are not included in MedAd Lite.
+                      
                     </span>
                   </div>
                 ) : (
@@ -781,7 +781,7 @@ export default function MedAdComplianceAI() {
                 integration and evaluator qualification — each exported as a formatted PDF.
               </p>
               <a href="#pricing" className="inline-flex mt-7 items-center gap-2 px-8 py-3 rounded-full bg-cyan-500 hover:bg-cyan-400 text-[#05060f] font-semibold transition">
-                Upgrade to Starter
+                View MedAd Lite plan
               </a>
             </div>
           ) : (
@@ -970,12 +970,12 @@ export default function MedAdComplianceAI() {
               )}
               {lite.error && <p className="mt-3 text-xs text-amber-300">{lite.error}</p>}
               <p className="mt-3 text-xs text-slate-500">
-                Billed through Google Play. MedAd Lite is an entry tier — upgrade to Starter for full audit PDFs and the CER / PMCF generator.
+                Billed through Google Play. Manage or cancel anytime in your Google Play subscriptions.
               </p>
             </div>
           )}
 
-          <div className="grid md:grid-cols-2 gap-6">
+          {!lite.isAndroid && (<div className="grid md:grid-cols-2 gap-6">
             <div id="tour-pricing-starter" className="rounded-2xl border border-cyan-400/20 bg-gradient-to-b from-cyan-500/[0.05] to-transparent p-8 backdrop-blur">
               <p className="text-xs uppercase tracking-[0.25em] text-cyan-300 mb-2">Starter Plan · For Clinics</p>
               <h3 className="font-display text-2xl text-white mb-2">Marketing Compliance Essentials</h3>
@@ -1090,7 +1090,7 @@ export default function MedAdComplianceAI() {
                 </a>
               </div>
             </div>
-          </div>
+          </div>)}
           {lite.isAndroid && (
             <div className="text-center mb-6">
               <a href="https://play.google.com/store/apps/details?id=com.ileanamazilu.app" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyan-400/30 bg-cyan-400/5 text-cyan-300 text-sm hover:bg-cyan-400/10 transition">
